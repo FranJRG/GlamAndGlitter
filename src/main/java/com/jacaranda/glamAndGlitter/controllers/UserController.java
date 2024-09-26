@@ -33,6 +33,12 @@ public class UserController {
 		return ResponseEntity.ok().body(users);
 	}
 	
+	@GetMapping("/checkEmail")
+	public ResponseEntity<?> findEmail(@RequestParam String email){
+		List<GetUserDTO>users = userService.findByEmail(email);
+		return ResponseEntity.ok().body(users);
+	}
+	
 	@PostMapping("/users/")
 	public ResponseEntity<?>register(@RequestBody RegisterUserDTO user) throws ValueNotValidException, UnsupportedEncodingException, MessagingException{
 		RegisterUserDTO newUser = userService.addUser(user);

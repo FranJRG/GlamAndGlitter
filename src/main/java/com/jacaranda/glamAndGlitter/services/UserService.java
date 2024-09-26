@@ -42,6 +42,10 @@ public class UserService implements UserDetailsService{
 		return ConvertToDTO.getUsersDTO(userRepository.findAll());
 	}
 	
+	public List<GetUserDTO>findByEmail(String email){
+		return ConvertToDTO.getUsersDTO(userRepository.findByEmail(email));
+	}
+	
 	public RegisterUserDTO addUser(RegisterUserDTO registerUser) throws ValueNotValidException, UnsupportedEncodingException, MessagingException {
 		
 		if(registerUser.getName() == null || registerUser.getName().isBlank()) {
@@ -116,6 +120,7 @@ public class UserService implements UserDetailsService{
 		}
 		String encodedPassword = encryptPassword(newPassword);
 		users.get(0).setPassword(encodedPassword);
+		userRepository.save(users.get(0));
 		
 		UserChangePasswordDTO user = new UserChangePasswordDTO(users.get(0).getEmail(),users.get(0).getPassword());
 		return user;

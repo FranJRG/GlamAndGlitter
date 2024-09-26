@@ -62,7 +62,7 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/users").permitAll()
+				.requestMatchers("/signin","/users","/checkEmail").permitAll()
 				.requestMatchers(HttpMethod.POST,"/users/","/forgotPassword","/verifyCode","/changePassword").permitAll()
 				.requestMatchers(HttpMethod.GET,"/services").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
