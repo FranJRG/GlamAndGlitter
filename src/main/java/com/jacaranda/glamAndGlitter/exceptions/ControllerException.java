@@ -32,4 +32,10 @@ public class ControllerException {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(newApiError);
 	}
 	
+	@ExceptionHandler(ElementNotFoundException.class)
+	public ResponseEntity<?>elementNotFoundException(ElementNotFoundException e){
+		ApiError newApiError = new ApiError(HttpStatus.BAD_REQUEST,e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(newApiError);
+	}
+	
 }

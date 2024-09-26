@@ -1,7 +1,10 @@
 package com.jacaranda.glamAndGlitter.services;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,11 +15,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.jacaranda.glamAndGlitter.exceptions.ElementNotFoundException;
 import com.jacaranda.glamAndGlitter.exceptions.ValueNotValidException;
 import com.jacaranda.glamAndGlitter.model.ConvertToDTO;
 import com.jacaranda.glamAndGlitter.model.User;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.RegisterUserDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.UserChangePasswordDTO;
 import com.jacaranda.glamAndGlitter.respository.UserRepository;
 
 import jakarta.mail.MessagingException;
@@ -30,6 +35,8 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	private Map<String,String>codesStorage = new HashMap<String,String>();
 	
 	public List<GetUserDTO> getUsers(){
 		return ConvertToDTO.getUsersDTO(userRepository.findAll());
@@ -74,6 +81,76 @@ public class UserService implements UserDetailsService{
 	
 		return registerUser;
 		
+	}
+	
+	public void sendCodeToUser(String email) throws UnsupportedEncodingException, MessagingException {
+		List<User> users = userRepository.findByEmail(email);
+		if(users.isEmpty()) {
+			throw new ElementNotFoundException("This user not exist");
+		}
+		
+		codesStorage.clear();
+		String code = UUID.randomUUID().toString();
+		
+		forgotPassword(users.get(0), code);
+		codesStorage.put(email, code);
+		
+	}
+	
+	public Boolean verifyCode(String email,String codeToCheck) {
+		String code = codesStorage.get(email);
+		
+		if(!code.equals(codeToCheck)) {
+			throw new ValueNotValidException("Sorry this code is not the same");
+		}
+		
+		codesStorage.clear();
+		return true;
+	}
+	
+	public UserChangePasswordDTO changePassword(String email, String newPassword) {
+		List<User>users = userRepository.findByEmail(email);
+		
+		if(users.isEmpty()) {
+			throw new ElementNotFoundException("This user not exist");
+		}
+		String encodedPassword = encryptPassword(newPassword);
+		users.get(0).setPassword(encodedPassword);
+		
+		UserChangePasswordDTO user = new UserChangePasswordDTO(users.get(0).getEmail(),users.get(0).getPassword());
+		return user;
+	}
+	
+	public void forgotPassword(User user, String code) throws UnsupportedEncodingException, MessagingException {
+
+	    String toAddress = user.getEmail();
+
+	    String fromAddress = "a.fraramgar@gmail.com";
+	    String senderName = "Glam&Glitter";
+
+	    String subject = "Forgot Password";
+	    String content = "Dear [[user]],<br><br>"
+	    	    + "Don't share this code with any people: " + code;
+
+
+
+	    MimeMessage message = mailSender.createMimeMessage();
+
+	    MimeMessageHelper helper = new MimeMessageHelper(message);
+
+
+	    helper.setFrom(fromAddress, senderName);
+	    helper.setTo(toAddress);
+	    helper.setSubject(subject);
+
+
+	    content = content.replace("[[user]]", user.getName());
+
+
+	    helper.setText(content, true);
+
+	    mailSender.send(message);
+	    
 	}
 	
 	private void successRegistration(User user)

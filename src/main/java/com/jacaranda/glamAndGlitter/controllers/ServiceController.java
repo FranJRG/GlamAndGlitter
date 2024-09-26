@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jacaranda.glamAndGlitter.model.Service;
+import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 import com.jacaranda.glamAndGlitter.services.ServiceService;
 
 @RestController
@@ -18,7 +18,7 @@ public class ServiceController {
 	
 	@GetMapping("/services")
 	public ResponseEntity<?> getServices(){
-		List<Service>services = serviceService.getServices();
+		List<ServiceDTO>services = serviceService.getServices();
 		return ResponseEntity.ok().body(services);
 	}
 	

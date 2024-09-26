@@ -1,6 +1,6 @@
 package com.jacaranda.glamAndGlitter.exceptions;
 
-public class ValueNotValidException extends Exception {
+public class ValueNotValidException extends RuntimeException {
 
 	/**
 	 * 

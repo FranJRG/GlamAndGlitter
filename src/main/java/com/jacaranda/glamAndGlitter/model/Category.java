@@ -21,7 +21,7 @@ public class Category {
 	
 	private String name;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "category")
 	private List<Service>services = new ArrayList<Service>();
 
 	public Category() {

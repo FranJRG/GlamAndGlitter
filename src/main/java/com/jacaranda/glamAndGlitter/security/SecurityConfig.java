@@ -62,16 +62,15 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/verifyToken").permitAll()
-				.requestMatchers(HttpMethod.POST,"/users/").permitAll()
-				.requestMatchers(HttpMethod.GET,"/services").authenticated()
+				.requestMatchers("/signin","/users").permitAll()
+				.requestMatchers(HttpMethod.POST,"/users/","/forgotPassword","/verifyCode","/changePassword").permitAll()
+				.requestMatchers(HttpMethod.GET,"/services").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())
 	        .logout((logout) -> logout.permitAll().logoutSuccessUrl("/"));
-		
         http.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();

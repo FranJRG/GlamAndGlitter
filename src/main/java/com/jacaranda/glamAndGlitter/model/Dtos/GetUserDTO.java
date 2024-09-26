@@ -33,8 +33,6 @@ public class GetUserDTO {
 		this.employeeSchedulesDTO = employeeSchedulesDTO;
 	}
 
-
-
 	public Integer getId() {
 		return id;
 	}
