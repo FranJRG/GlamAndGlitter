@@ -19,12 +19,21 @@ import com.jacaranda.glamAndGlitter.model.User;
 import com.jacaranda.glamAndGlitter.model.Dtos.TokenDTO;
 import com.jacaranda.glamAndGlitter.utility.TokenUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 public class AuthController {
 	
 	@Autowired
 	AuthenticationManager authenticationManager;
-		
+	
+	@Operation(summary = "Pagina de bienvenidad para saber que la aplicación está operativa")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@GetMapping("/")
 	public ResponseEntity<?> welcomePage(){
 		Map<String,Object>newMessage = new HashMap<String,Object>();
@@ -35,6 +44,11 @@ public class AuthController {
 		return ResponseEntity.ok().body(newMessage);
 	}
 	
+	@Operation(summary = "Loguearse en la aplicación")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@RequestBody LoginCredentials loginRequest) throws CredentialsNotValidException {
 

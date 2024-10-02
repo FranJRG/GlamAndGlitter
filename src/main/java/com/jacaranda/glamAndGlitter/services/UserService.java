@@ -36,16 +36,38 @@ public class UserService implements UserDetailsService{
 	@Autowired
 	private JavaMailSender mailSender;
 	
+	
+	//Mapa para almacenar de forma temporal el código enviado al correo electrónico
 	private Map<String,String>codesStorage = new HashMap<String,String>();
 	
+	/**
+	 * Método para obtener todos los usuarios
+	 * @return
+	 */
 	public List<GetUserDTO> getUsers(){
 		return ConvertToDTO.getUsersDTO(userRepository.findAll());
 	}
 	
+	/**
+	 * Método para encontrar usuarios por un email
+	 * @param email
+	 * @return
+	 */
 	public List<GetUserDTO>findByEmail(String email){
 		return ConvertToDTO.getUsersDTO(userRepository.findByEmail(email));
 	}
 	
+	/**
+	 * Método para registrarse en la aplicación
+	 * Validamos todos los campos para que no existan nulos
+	 * Encriptamos la contraseña
+	 * Creamos y guardamos el usuario, enviando un correo electrónico a su email
+	 * @param registerUser
+	 * @return
+	 * @throws ValueNotValidException
+	 * @throws UnsupportedEncodingException
+	 * @throws MessagingException
+	 */
 	public RegisterUserDTO addUser(RegisterUserDTO registerUser) throws ValueNotValidException, UnsupportedEncodingException, MessagingException {
 		
 		if(registerUser.getName() == null || registerUser.getName().isBlank()) {
@@ -87,6 +109,15 @@ public class UserService implements UserDetailsService{
 		
 	}
 	
+	/**
+	 * Método para enviar el código al correo del usuario
+	 * Comprobamos que exista el correo
+	 * Vacíamos el mapa por si le da 2 veces o cambia el correo
+	 * Generamos el código y enviamos el correo
+	 * @param email
+	 * @throws UnsupportedEncodingException
+	 * @throws MessagingException
+	 */
 	public void sendCodeToUser(String email) throws UnsupportedEncodingException, MessagingException {
 		List<User> users = userRepository.findByEmail(email);
 		if(users.isEmpty()) {
@@ -101,6 +132,13 @@ public class UserService implements UserDetailsService{
 		
 	}
 	
+	/**
+	 * Método para verificar si el código introducido por el usuario es el mismo que el enviado
+	 * Si es el mismo devolvemos true y vacíamos el mapa, sino lanzamos exception
+	 * @param email
+	 * @param codeToCheck
+	 * @return
+	 */
 	public Boolean verifyCode(String email,String codeToCheck) {
 		String code = codesStorage.get(email);
 		
@@ -112,6 +150,14 @@ public class UserService implements UserDetailsService{
 		return true;
 	}
 	
+	/**
+	 * Método para cambiar la contraseña del usuario
+	 * Buscamos de nuevo el usuario por su email (a modo de seguridad)
+	 * Encriptamos la contraseña se la asignamos al usuario y guardamos los cambios
+	 * @param email
+	 * @param newPassword
+	 * @return
+	 */
 	public UserChangePasswordDTO changePassword(String email, String newPassword) {
 		List<User>users = userRepository.findByEmail(email);
 		
@@ -126,6 +172,13 @@ public class UserService implements UserDetailsService{
 		return user;
 	}
 	
+	/**
+	 * Método para enviar el correo con el código al usuario
+	 * @param user
+	 * @param code
+	 * @throws UnsupportedEncodingException
+	 * @throws MessagingException
+	 */
 	public void forgotPassword(User user, String code) throws UnsupportedEncodingException, MessagingException {
 
 	    String toAddress = user.getEmail();
@@ -158,6 +211,12 @@ public class UserService implements UserDetailsService{
 	    
 	}
 	
+	/**
+	 * Método para avisar a un usuario por correo de su registro en la aplicación
+	 * @param user
+	 * @throws MessagingException
+	 * @throws UnsupportedEncodingException
+	 */
 	private void successRegistration(User user)
 	        throws MessagingException, UnsupportedEncodingException {
 
@@ -195,12 +254,21 @@ public class UserService implements UserDetailsService{
 	    mailSender.send(message);
 	}
 	
+	/**
+	 * Método para encriptar la contraseña con BCrypt
+	 * @param password
+	 * @return encodedPassword
+	 */
 	public static String encryptPassword(String password) {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		String encodedPassword = passwordEncoder.encode(password);
 		return encodedPassword;
 	}
 
+	/**
+	 * Método para loguearnos en la aplicación por nuestro correo electrónico
+	 * Buscamos el usuario por email, si no existe, lanzamos exception
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String email)throws UsernameNotFoundException{
 		List<User>users = userRepository.findByEmail(email);

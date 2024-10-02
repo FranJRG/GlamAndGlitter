@@ -15,6 +15,11 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
+	/**
+	 * Método para obtener todas las categorías
+	 * Usaremos la clase ConvertToDTO para convertiras en DTOs
+	 * @return
+	 */
 	public List<CategoryDTO>getCategories(){
 		return ConvertToDTO.getCategoriesDTO(categoryRepository.findAll());
 	}

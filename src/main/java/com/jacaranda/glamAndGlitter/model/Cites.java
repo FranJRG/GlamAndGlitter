@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +26,7 @@ public class Cites {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@JsonFormat(shape= Shape.STRING, pattern ="yyyy-MM-dd")
 	private Date day;
 	
 	private Time startTime;
@@ -48,16 +52,14 @@ public class Cites {
 		super();
 	}
 	
-	public Cites(Integer id, Date day, Time startTime, Time endTime, User user, User worker, Service service, List<Rating> ratings) {
+	public Cites(Date day, Time startTime, Time endTime,User user, User worker, Service service) {
 		super();
-		this.id = id;
 		this.day = day;
 		this.startTime = startTime;
-		this.endTime = endTime;
 		this.user = user;
 		this.worker = worker;
 		this.service = service;
-		this.ratings = ratings;
+		this.endTime = endTime;
 	}
 
 	public Integer getId() {

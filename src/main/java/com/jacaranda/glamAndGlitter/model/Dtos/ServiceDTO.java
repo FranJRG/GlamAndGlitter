@@ -15,13 +15,17 @@ public class ServiceDTO {
 	private Boolean active;
 	
 	private String categoryName;
+	
+	private String duration;
+	
+	private String imageUrl;
 
 	public ServiceDTO() {
 		super();
 	}
 
 	public ServiceDTO(Integer id, String name,String description, Double price, Boolean active,
-			String categoryName) {
+			String categoryName, String imageUrl, String duration) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -29,6 +33,8 @@ public class ServiceDTO {
 		this.price = price;
 		this.active = active;
 		this.categoryName = categoryName;
+		this.imageUrl = imageUrl;
+		this.duration = duration;
 	}
 
 	public Integer getId() {
@@ -77,6 +83,30 @@ public class ServiceDTO {
 
 	public void setCategory(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 	@Override

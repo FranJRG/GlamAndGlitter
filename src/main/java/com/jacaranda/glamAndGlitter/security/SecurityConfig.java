@@ -62,10 +62,12 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/users","/checkEmail").permitAll()
+				.requestMatchers("/signin","/checkEmail").permitAll()
+				.requestMatchers(HttpMethod.GET,"/cites").permitAll()
 				.requestMatchers(HttpMethod.POST,"/users/","/forgotPassword","/verifyCode","/changePassword").permitAll()
 				.requestMatchers(HttpMethod.GET,"/services","/randomServices", 
 						"/categories","/servicesByCategory/*").permitAll()
+				.requestMatchers(HttpMethod.POST,"/addCite").authenticated()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.anyRequest().denyAll();

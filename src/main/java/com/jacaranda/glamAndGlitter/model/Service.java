@@ -31,6 +31,8 @@ public class Service {
 	
 	private Boolean active;
 	
+	private String imageUrl;
+	
 	@ManyToOne
 	@JoinColumn(name = "categoryId")
 	private Category category;
@@ -42,7 +44,8 @@ public class Service {
 		super();
 	}
 
-	public Service(Integer id, String name, String duration, String description, Double price, Boolean active, Category category, List<Cites> cites) {
+	public Service(Integer id, String name, String duration, String description, Double price, Boolean active, 
+			Category category, List<Cites> cites, String imageUrl) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -52,6 +55,7 @@ public class Service {
 		this.active = active;
 		this.category = category;
 		this.cites = cites;
+		this.imageUrl = imageUrl;
 	}
 
 	public Integer getId() {
@@ -116,6 +120,14 @@ public class Service {
 
 	public void setCites(List<Cites> cites) {
 		this.cites = cites;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	@Override

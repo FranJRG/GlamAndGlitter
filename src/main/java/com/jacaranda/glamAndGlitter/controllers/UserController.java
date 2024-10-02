@@ -19,6 +19,9 @@ import com.jacaranda.glamAndGlitter.model.Dtos.RegisterUserDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.UserChangePasswordDTO;
 import com.jacaranda.glamAndGlitter.services.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
 
 @RestController
@@ -27,18 +30,22 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/users")
-	public ResponseEntity<?> findAll(){
-		List<GetUserDTO>users = userService.getUsers();
-		return ResponseEntity.ok().body(users);
-	}
-	
+	@Operation(summary = "Endpoint para comprobar si existe un usuario por un email, cualquier usuario podrá acceder")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@GetMapping("/checkEmail")
 	public ResponseEntity<?> findEmail(@RequestParam String email){
 		List<GetUserDTO>users = userService.findByEmail(email);
 		return ResponseEntity.ok().body(users);
 	}
 	
+	@Operation(summary = "Registrarse en la app, cualquier usuario podrá acceder")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@PostMapping("/users/")
 	public ResponseEntity<?>register(@RequestBody RegisterUserDTO user) throws ValueNotValidException, UnsupportedEncodingException, MessagingException{
 		RegisterUserDTO newUser = userService.addUser(user);
@@ -49,6 +56,11 @@ public class UserController {
 	 * Métodos para recuperar la contraseña en caso de olvidarla
 	 * */
 	
+	@Operation(summary = "Endpoint para usuario que haya olvidado su contraseña, cualquier usuario podrá acceder")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<?>forgotPassword(@RequestParam String email) throws UnsupportedEncodingException, MessagingException{
 		userService.sendCodeToUser(email);
@@ -59,6 +71,11 @@ public class UserController {
 		return ResponseEntity.ok().body(newMessage);
 	}
 	
+	@Operation(summary = "Verificar código enviado por email, cualquier usuario podrá acceder")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@PostMapping("/verifyCode")
 	public ResponseEntity<?>verifyCode(@RequestParam String email,@RequestParam String codeToCheck){
 		Boolean isValidCode = userService.verifyCode(email, codeToCheck);
@@ -72,6 +89,11 @@ public class UserController {
 		return ResponseEntity.ok().body(isValidCode);
 	}
 	
+	@Operation(summary = "Endpoint para cambiar la contraseña del usuario, cualquier usuario podrá acceder aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@PostMapping("/changePassword")
 	public ResponseEntity<?>changePassword(@RequestParam String email,@RequestParam String password){
 		UserChangePasswordDTO userPassword = userService.changePassword(email,password);

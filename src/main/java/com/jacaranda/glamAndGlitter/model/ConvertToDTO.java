@@ -3,12 +3,19 @@ package com.jacaranda.glamAndGlitter.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.CategoryDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.EmployeeScheduleDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 
 public class ConvertToDTO {
+	
+	/**
+	 * Clase para convertir listas a listasDTOs
+	 * @param List<T>
+	 * @return List<Tdto>
+	 */
 
 	public static List<GetUserDTO>getUsersDTO(List<User>users){
 		return users.stream().map(user -> new GetUserDTO(user.getId(),user.getName(),
@@ -22,11 +29,17 @@ public class ConvertToDTO {
 	
 	public static List<ServiceDTO>getServicesDTO(List<Service>services){
 		return services.stream().map(service -> new ServiceDTO(service.getId(),service.getName(),service.getDescription()
-				,service.getPrice(),service.getActive(),service.getCategory().getName())).collect(Collectors.toList());
+				,service.getPrice(),service.getActive(),service.getCategory().getName(),service.getImageUrl(),service.getDuration())).collect(Collectors.toList());
 	}
 	
 	public static List<CategoryDTO>getCategoriesDTO(List<Category>categories){
 		return categories.stream().map(category -> new CategoryDTO(category.getId(),category.getName())).collect(Collectors.toList());
+	}
+	
+	public static List<BookCiteDTO>convertCites(List<Cites>cites){
+		return cites.stream().map(cite -> new BookCiteDTO(cite.getUser().getId(),cite.getWorker().getId(),cite.getDay()
+				,cite.getStartTime(),cite.getService().getId()))
+				.collect(Collectors.toList());
 	}
 
 }
