@@ -39,7 +39,11 @@ public class User implements UserDetails{
 	
 	private String role;
 	
-	private Boolean notifications;
+	private Boolean emailNotifications;
+	
+	private Boolean smsNotifications;
+	
+	private Boolean calendarNotifications;
 	
 	@OneToMany(mappedBy = "user")
 	private List<Cites>cites = new ArrayList<Cites>();
@@ -58,14 +62,16 @@ public class User implements UserDetails{
 	}
 
 	public User(String name, String email, String phone, String password, String role,
-			Boolean notifications) {
+			Boolean emailNotifications, Boolean smsNotifications, Boolean calendarNotifications) {
 		super();
 		this.name = name;
 		this.email = email;
 		this.phone = phone;
 		this.password = password;
 		this.role = role;
-		this.notifications = notifications;
+		this.emailNotifications = emailNotifications;
+		this.smsNotifications = smsNotifications;
+		this.calendarNotifications = calendarNotifications;
 	}
 
 	public Integer getId() {
@@ -116,12 +122,28 @@ public class User implements UserDetails{
 		this.role = role;
 	}
 
-	public Boolean getNotifications() {
-		return notifications;
+	public Boolean getEmailNotifications() {
+		return emailNotifications;
 	}
 
-	public void setNotifications(Boolean notifications) {
-		this.notifications = notifications;
+	public void setEmailNotifications(Boolean emailNotifications) {
+		this.emailNotifications = emailNotifications;
+	}
+
+	public Boolean getSmsNotifications() {
+		return smsNotifications;
+	}
+
+	public void setSmsNotifications(Boolean smsNotifications) {
+		this.smsNotifications = smsNotifications;
+	}
+
+	public Boolean getCalendarNotifications() {
+		return calendarNotifications;
+	}
+
+	public void setCalendarNotifications(Boolean calendarNotifications) {
+		this.calendarNotifications = calendarNotifications;
 	}
 
 	public List<Cites> getCites() {

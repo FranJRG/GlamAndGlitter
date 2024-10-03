@@ -8,10 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 public class BookCiteDTO {
-
-	private Integer userId;
-	
-	private Integer idWorker;
 	
 	@JsonFormat(shape= Shape.STRING, pattern ="yyyy-MM-dd")
 	private Date day;
@@ -24,29 +20,11 @@ public class BookCiteDTO {
 		super();
 	}
 
-	public BookCiteDTO(Integer userId, Integer idWorker, Date day, Time startTime,Integer idService) {
+	public BookCiteDTO(Date day, Time startTime,Integer idService) {
 		super();
-		this.userId = userId;
-		this.idWorker = idWorker;
 		this.day = day;
 		this.startTime = startTime;
 		this.idService = idService;
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-
-	public Integer getIdWorker() {
-		return idWorker;
-	}
-
-	public void setIdWorker(Integer idWorker) {
-		this.idWorker = idWorker;
 	}
 
 	public Date getDay() {
@@ -75,7 +53,7 @@ public class BookCiteDTO {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(day, idService, idWorker, startTime, userId);
+		return Objects.hash(day, idService, startTime);
 	}
 
 	@Override
@@ -88,8 +66,7 @@ public class BookCiteDTO {
 			return false;
 		BookCiteDTO other = (BookCiteDTO) obj;
 		return Objects.equals(day, other.day) && Objects.equals(idService, other.idService)
-				&& Objects.equals(idWorker, other.idWorker) && Objects.equals(startTime, other.startTime)
-				&& Objects.equals(userId, other.userId);
+				&& Objects.equals(startTime, other.startTime);
 	}
 
 	

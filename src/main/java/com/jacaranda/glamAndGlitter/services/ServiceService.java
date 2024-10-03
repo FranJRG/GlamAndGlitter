@@ -38,7 +38,7 @@ public class ServiceService {
 		
 		try {
 			id = Integer.valueOf(idCategory);
-		}catch(ValueNotValidException e) {
+		}catch(NumberFormatException e) {
 			throw new ValueNotValidException("Id must be numeric");
 		}
 		

@@ -22,8 +22,8 @@ public class ControllerException {
 	
 	@ExceptionHandler(RoleNotValidException.class)
 	public ResponseEntity<?>roleNotValidException(RoleNotValidException e){
-		ApiError newApiError = new ApiError(HttpStatus.BAD_REQUEST,e.getMessage());
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(newApiError);
+		ApiError newApiError = new ApiError(HttpStatus.UNAUTHORIZED,e.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(newApiError);
 	}
 	
 	@ExceptionHandler(ExceptionTokenNotValid.class)

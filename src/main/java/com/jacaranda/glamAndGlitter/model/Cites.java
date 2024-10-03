@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,19 +46,18 @@ public class Cites {
 	@JoinColumn(name = "idService")
 	private Service service;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "cites", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Rating>ratings = new ArrayList<Rating>();
 
 	public Cites() {
 		super();
 	}
 	
-	public Cites(Date day, Time startTime, Time endTime,User user, User worker, Service service) {
+	public Cites(Date day, Time startTime, Time endTime,User user, Service service) {
 		super();
 		this.day = day;
 		this.startTime = startTime;
 		this.user = user;
-		this.worker = worker;
 		this.service = service;
 		this.endTime = endTime;
 	}

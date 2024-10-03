@@ -67,7 +67,10 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST,"/users/","/forgotPassword","/verifyCode","/changePassword").permitAll()
 				.requestMatchers(HttpMethod.GET,"/services","/randomServices", 
 						"/categories","/servicesByCategory/*").permitAll()
-				.requestMatchers(HttpMethod.POST,"/addCite").authenticated()
+				.requestMatchers(HttpMethod.POST,"/addCite","/activateNotifications").authenticated()
+				.requestMatchers(HttpMethod.PUT,"/modifyCite/*").authenticated()
+				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
+				.requestMatchers(HttpMethod.POST,"/setWorker").hasAuthority("admin")
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.anyRequest().denyAll();

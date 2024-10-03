@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -98,6 +99,24 @@ public class UserController {
 	public ResponseEntity<?>changePassword(@RequestParam String email,@RequestParam String password){
 		UserChangePasswordDTO userPassword = userService.changePassword(email,password);
 		return ResponseEntity.ok().body(userPassword);
+	}
+	
+	/**
+	 * Métodos para el recordatorio de citas
+	 */
+	
+	@Operation(summary = "Endpoint para activar las notificaciones del usuario, solo los usuarios logueados podrán activar o desactivar sus notificaciones")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad Request"),
+			@ApiResponse(responseCode = "200", description = "Complete")
+	})
+	@PostMapping("/activateNotifications")
+	public ResponseEntity<?>activateNotifications(@RequestParam Optional<Boolean> emailNotificactions, 
+			@RequestParam Optional<Boolean> smsNotifications, @RequestParam Optional<Boolean> calendarNotifications){
+		
+		GetUserDTO userDTO = userService.updateNotifications(emailNotificactions.orElse(null),smsNotifications.orElse(null),calendarNotifications.orElse(null));
+		return ResponseEntity.ok().body(userDTO);
+		
 	}
 	
 }

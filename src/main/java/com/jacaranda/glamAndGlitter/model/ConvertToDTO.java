@@ -37,9 +37,8 @@ public class ConvertToDTO {
 	}
 	
 	public static List<BookCiteDTO>convertCites(List<Cites>cites){
-		return cites.stream().map(cite -> new BookCiteDTO(cite.getUser().getId(),cite.getWorker().getId(),cite.getDay()
-				,cite.getStartTime(),cite.getService().getId()))
-				.collect(Collectors.toList());
+		return cites.stream().map(cite -> new BookCiteDTO(cite.getDay(),cite.getStartTime(),
+				cite.getService().getId())).collect(Collectors.toList());
 	}
 
 }

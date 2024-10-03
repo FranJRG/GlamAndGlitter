@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -101,7 +103,7 @@ public class UserService implements UserDetailsService{
 		}
 		String encodedPassword = encryptPassword(registerUser.getPassword());
 		User user = new User(registerUser.getName(),registerUser.getEmail(),registerUser.getPhone(),
-				encodedPassword,"user",false);
+				encodedPassword,"user",false,false,false);
 		userRepository.save(user);
 		successRegistration(user);
 	
@@ -170,6 +172,32 @@ public class UserService implements UserDetailsService{
 		
 		UserChangePasswordDTO user = new UserChangePasswordDTO(users.get(0).getEmail(),users.get(0).getPassword());
 		return user;
+	}
+	
+	public GetUserDTO updateNotifications(Boolean emailNotifications,
+			Boolean smsNotifications,Boolean calendarNotifications) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User user = userRepository.findByEmail(auth.getName()).get(0);
+		
+		if(emailNotifications != null) {
+			user.setEmailNotifications(emailNotifications);
+		}
+		
+		if(smsNotifications != null) {
+			user.setSmsNotifications(smsNotifications);
+		}
+		
+		if(calendarNotifications != null) {
+			user.setCalendarNotifications(calendarNotifications);
+		}
+		
+		GetUserDTO userDTO = new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
+				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()));
+		
+		userRepository.save(user);
+		return userDTO;
+		
 	}
 	
 	/**
