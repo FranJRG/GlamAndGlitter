@@ -47,7 +47,7 @@ public class UserController {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
-	@PostMapping("/users/")
+	@PostMapping("/users")
 	public ResponseEntity<?>register(@RequestBody RegisterUserDTO user) throws ValueNotValidException, UnsupportedEncodingException, MessagingException{
 		RegisterUserDTO newUser = userService.addUser(user);
 		return ResponseEntity.ok().body(newUser);

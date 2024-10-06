@@ -43,7 +43,7 @@ public class TokenUtils {
 	 * @param role: guardaremos el role dentro del token. Si puediera tener varios roles, también se podría guardar.
 	 * @return: el token que debe empezar por Bearer y un espacio.
 	 */
-    public static String generateToken(String email,String role, Integer userId)  {
+    public static String generateToken(String email,String role, Integer userId, String name)  {
     	
     	// Establecemos la fecha de expiración del token en milisegundos
     	Date expirationDate = new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALIDATY_SECONDS*1000);
@@ -52,6 +52,7 @@ public class TokenUtils {
     	// El username no es necesario guardarlo porque ya va en el token, en el subject.
     	Map<String,Object> extra = new HashMap<>();
     	extra.put("userId", userId);
+    	extra.put("name", name);
     	extra.put("role", role);
     	
     	// Construimos el token con el nombre del usuario, la fecha de expiración, la información

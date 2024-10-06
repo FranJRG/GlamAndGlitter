@@ -327,6 +327,15 @@ public class CiteService {
 		}
 	}
 	
+	public List<BookCiteDTO> findByDateAndTime(LocalDate date, String time){
+		
+		Time newTime = convertToTime(time);
+		
+		List<Cites>cites = citeRepository.findByDayAndStartTime(Date.valueOf(date), newTime);
+		List<BookCiteDTO> citesDTO =  ConvertToDTO.convertCites(cites);
+		return citesDTO;
+	}
+	
 	public void checkTime(Time startTime, EmployeeSchedule schedule) {
 		
 		if((startTime.after(Time.valueOf("09:00:00")) && startTime.before(Time.valueOf("13:00:00"))) && (schedule.getTurn().equals("Afternoon"))) {
@@ -361,6 +370,17 @@ public class CiteService {
 		}
 		
 		return id;
+	}
+	
+	public Time convertToTime(String time) {
+		Time newTime;
+		
+		try {
+			newTime = Time.valueOf(time);	
+		}catch(IllegalArgumentException e) {
+			throw new ValueNotValidException("Time format must be HH:mm:ss");
+		}
+		return newTime;
 	}
 
     public Time calculateEndTime(Time startTime, int durationInMinutes) {

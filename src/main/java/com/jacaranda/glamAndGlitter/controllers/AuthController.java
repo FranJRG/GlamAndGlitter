@@ -64,7 +64,7 @@ public class AuthController {
 		}
 		
 		User user = (User)authentication.getPrincipal();
-		String jwt = TokenUtils.generateToken(loginRequest.getEmail(),user.getRole(), user.getId());
+		String jwt = TokenUtils.generateToken(loginRequest.getEmail(),user.getRole(), user.getId(), user.getName());
 		TokenDTO tokenDTO = new TokenDTO(jwt);
 		return ResponseEntity.ok(tokenDTO);
 	}

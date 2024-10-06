@@ -88,7 +88,7 @@ public class UserService implements UserDetailsService{
 			throw new ValueNotValidException("Phone can´t be null");
 		}
 		
-		if(!registerUser.getPhone().matches("^\\d{9}$")) {
+		if(registerUser.getPhone().length() > 9 || registerUser.getPhone().length() < 9) {
 			throw new ValueNotValidException("Phone format not valid");
 		}
 		

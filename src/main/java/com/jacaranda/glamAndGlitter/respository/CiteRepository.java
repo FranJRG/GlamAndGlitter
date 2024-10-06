@@ -25,6 +25,8 @@ public interface CiteRepository extends JpaRepository<Cites, Integer>{
 	                                @Param("day") Date date, 
 	                                @Param("startTime") Time startTime, 
 	                                @Param("endTime") Time endTime);
+	
+	List<Cites> findByDayAndStartTime(Date date, Time startTime);
 
 	
 }

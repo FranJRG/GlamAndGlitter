@@ -62,9 +62,9 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/checkEmail").permitAll()
-				.requestMatchers(HttpMethod.GET,"/cites").permitAll()
-				.requestMatchers(HttpMethod.POST,"/users/","/forgotPassword","/verifyCode","/changePassword").permitAll()
+				.requestMatchers("/signin","/users","/checkEmail").permitAll()
+				.requestMatchers(HttpMethod.GET,"/cites","/checkCite","/services/*").permitAll()
+				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode","/changePassword").permitAll()
 				.requestMatchers(HttpMethod.GET,"/services","/randomServices", 
 						"/categories","/servicesByCategory/*").permitAll()
 				.requestMatchers(HttpMethod.POST,"/addCite","/activateNotifications").authenticated()

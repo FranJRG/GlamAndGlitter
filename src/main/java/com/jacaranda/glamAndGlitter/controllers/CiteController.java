@@ -1,10 +1,13 @@
 package com.jacaranda.glamAndGlitter.controllers;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +29,17 @@ public class CiteController {
 
 	@Autowired
 	private CiteService citeService;
+	
+	@Operation(summary = "Método para saber si una cita ya existe por su hora y fecha")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/checkCite")
+	public ResponseEntity<?>checkCite(@RequestParam LocalDate date,@RequestParam String time){
+		List<BookCiteDTO>cites =  citeService.findByDateAndTime(date,time);
+		return ResponseEntity.ok().body(cites);
+	}
 	
 	@Operation(summary = "Método para reservar una cita, solo los usuarios logueados podrán acceder aquí")
 	@ApiResponses(value = {

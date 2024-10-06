@@ -10,6 +10,7 @@ import com.jacaranda.glamAndGlitter.exceptions.ElementNotFoundException;
 import com.jacaranda.glamAndGlitter.exceptions.ValueNotValidException;
 import com.jacaranda.glamAndGlitter.model.Category;
 import com.jacaranda.glamAndGlitter.model.ConvertToDTO;
+import com.jacaranda.glamAndGlitter.model.Service;
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 import com.jacaranda.glamAndGlitter.respository.CategoryRepository;
 import com.jacaranda.glamAndGlitter.respository.ServiceRepository;
@@ -25,6 +26,28 @@ public class ServiceService {
 	
 	public List<ServiceDTO> getServices(){
 		return ConvertToDTO.getServicesDTO(serviceRepository.findAll());
+	}
+	
+	public ServiceDTO getService(String idString){
+		Integer id;
+		
+		try {
+			id = Integer.valueOf(idString);
+		}catch(NumberFormatException e){
+			throw new ValueNotValidException("Id must be numeric");
+		}
+		
+		List<Service> services = serviceRepository.findByIdAndActive(id,true);
+		
+		if(services.isEmpty()) {
+			throw new ElementNotFoundException("This service is not found or is inactive");
+		}
+		
+		ServiceDTO service = new ServiceDTO(services.get(0).getId(),services.get(0).getName(),
+				services.get(0).getDescription(),services.get(0).getPrice(),
+				services.get(0).getActive(),services.get(0).getCategory().getName(),services.get(0).getImageUrl(),services.get(0).getDuration());
+		
+		return service;
 	}
 	
 	public List<ServiceDTO> getRandomServices(){

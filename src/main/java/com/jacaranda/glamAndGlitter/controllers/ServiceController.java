@@ -32,6 +32,17 @@ public class ServiceController {
 		return ResponseEntity.ok().body(services);
 	}
 	
+	@Operation(summary = "Obtener un servicio por su id, cualquier usuario podrá acceder aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/services/{id}")
+	public ResponseEntity<?> getService(@PathVariable String id){
+		ServiceDTO service = serviceService.getService(id);
+		return ResponseEntity.ok().body(service);
+	}
+	
 	@Operation(summary = "Obtener servicios de forma aleatoria, cualquier usuario podrá acceder")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
