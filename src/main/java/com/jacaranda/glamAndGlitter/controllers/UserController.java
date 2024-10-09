@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +31,17 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Operation(summary = "Endpoint para comprobar si existe un usuario por un email, cualquier usuario podrá acceder")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/user/{id}")
+	public ResponseEntity<?> findById(@PathVariable String id){
+		GetUserDTO user = userService.findById(id);
+		return ResponseEntity.ok().body(user);
+	}
 	
 	@Operation(summary = "Endpoint para comprobar si existe un usuario por un email, cualquier usuario podrá acceder")
 	@ApiResponses(value = {
@@ -111,10 +123,10 @@ public class UserController {
 			@ApiResponse(responseCode = "200", description = "Complete")
 	})
 	@PostMapping("/activateNotifications")
-	public ResponseEntity<?>activateNotifications(@RequestParam Optional<Boolean> emailNotificactions, 
+	public ResponseEntity<?>activateNotifications(@RequestParam Optional<Boolean> emailNotifications, 
 			@RequestParam Optional<Boolean> smsNotifications, @RequestParam Optional<Boolean> calendarNotifications){
 		
-		GetUserDTO userDTO = userService.updateNotifications(emailNotificactions.orElse(null),smsNotifications.orElse(null),calendarNotifications.orElse(null));
+		GetUserDTO userDTO = userService.updateNotifications(emailNotifications.orElse(null),smsNotifications.orElse(null),calendarNotifications.orElse(null));
 		return ResponseEntity.ok().body(userDTO);
 		
 	}

@@ -16,6 +16,12 @@ public class GetUserDTO {
 	
 	private String role;
 	
+	private Boolean emailNotifications;
+	
+	private Boolean smsNotifications;
+	
+	private Boolean calendarNotifications;
+	
 	private List<EmployeeScheduleDTO>employeeSchedulesDTO = new ArrayList<EmployeeScheduleDTO>();
 
 	public GetUserDTO() {
@@ -23,7 +29,7 @@ public class GetUserDTO {
 	}
 	
 	public GetUserDTO(Integer id, String name, String email, String phone, String role,
-			List<EmployeeScheduleDTO> employeeSchedulesDTO) {
+			List<EmployeeScheduleDTO> employeeSchedulesDTO, Boolean calendarNotifications, Boolean smsNotifications, Boolean emailNotifications) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -31,6 +37,9 @@ public class GetUserDTO {
 		this.phone = phone;
 		this.role = role;
 		this.employeeSchedulesDTO = employeeSchedulesDTO;
+		this.calendarNotifications = calendarNotifications;
+		this.smsNotifications = smsNotifications;
+		this.emailNotifications = emailNotifications;
 	}
 
 	public Integer getId() {
@@ -78,6 +87,38 @@ public class GetUserDTO {
 	}
 
 	public void setEmployeeSchedules(List<EmployeeScheduleDTO> employeeSchedulesDTO) {
+		this.employeeSchedulesDTO = employeeSchedulesDTO;
+	}
+
+	public Boolean getEmailNotifications() {
+		return emailNotifications;
+	}
+
+	public void setEmailNotifications(Boolean emailNotifications) {
+		this.emailNotifications = emailNotifications;
+	}
+
+	public Boolean getSmsNotifications() {
+		return smsNotifications;
+	}
+
+	public void setSmsNotifications(Boolean smsNotifications) {
+		this.smsNotifications = smsNotifications;
+	}
+
+	public Boolean getCalendarNotifications() {
+		return calendarNotifications;
+	}
+
+	public void setCalendarNotifications(Boolean calendarNotifications) {
+		this.calendarNotifications = calendarNotifications;
+	}
+
+	public List<EmployeeScheduleDTO> getEmployeeSchedulesDTO() {
+		return employeeSchedulesDTO;
+	}
+
+	public void setEmployeeSchedulesDTO(List<EmployeeScheduleDTO> employeeSchedulesDTO) {
 		this.employeeSchedulesDTO = employeeSchedulesDTO;
 	}
 

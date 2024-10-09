@@ -51,6 +51,25 @@ public class UserService implements UserDetailsService{
 	}
 	
 	/**
+	 * Método para obtener un usuario por su id
+	 */
+	public GetUserDTO findById(String idString) {
+		Integer id;
+		try {
+			id = Integer.valueOf(idString);
+		}catch(NumberFormatException e) {
+			throw new ValueNotValidException("Id must be numeric");
+		}
+		
+		User user = userRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("User not found with this id"));
+		
+		GetUserDTO userDTO = new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
+				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),
+				user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications());
+		return userDTO;
+	}
+	
+	/**
 	 * Método para encontrar usuarios por un email
 	 * @param email
 	 * @return
@@ -193,7 +212,8 @@ public class UserService implements UserDetailsService{
 		}
 		
 		GetUserDTO userDTO = new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
-				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()));
+				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),
+				user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications());
 		
 		userRepository.save(user);
 		return userDTO;

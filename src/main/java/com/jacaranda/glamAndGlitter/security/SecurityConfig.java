@@ -62,15 +62,16 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/users","/checkEmail").permitAll()
-				.requestMatchers(HttpMethod.GET,"/cites","/checkCite","/services/*").permitAll()
+				.requestMatchers("/signin","/users","/checkEmail","/services","/randomServices", 
+						"/categories","/servicesByCategory/*","/activateNotifications","/services/*",
+						"/checkCite","/addCite","/pendingCites","/setWorker").permitAll()
 				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode","/changePassword").permitAll()
-				.requestMatchers(HttpMethod.GET,"/services","/randomServices", 
-						"/categories","/servicesByCategory/*").permitAll()
-				.requestMatchers(HttpMethod.POST,"/addCite","/activateNotifications").authenticated()
+				//.requestMatchers(HttpMethod.POST,).authenticated()
+				.requestMatchers(HttpMethod.GET,"/user/*").authenticated()
 				.requestMatchers(HttpMethod.PUT,"/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				.requestMatchers(HttpMethod.POST,"/setWorker").hasAuthority("admin")
+				//.requestMatchers(HttpMethod.GET,).hasAuthority("admin")
+				//.requestMatchers(HttpMethod.POST,).hasAuthority("admin")
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.anyRequest().denyAll();

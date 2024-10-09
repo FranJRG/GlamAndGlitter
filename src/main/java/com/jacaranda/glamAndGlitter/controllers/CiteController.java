@@ -3,6 +3,7 @@ package com.jacaranda.glamAndGlitter.controllers;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.services.CiteService;
 
@@ -35,9 +37,21 @@ public class CiteController {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
+	@GetMapping("/pendingCites")
+	public ResponseEntity<?>pendingCites(){
+		List<GetPendingCiteDTO>cites =  citeService.getPendingCites();
+		return ResponseEntity.ok().body(cites);
+	}
+	
+	
+	@Operation(summary = "Método para saber si una cita ya existe por su hora y fecha")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@GetMapping("/checkCite")
-	public ResponseEntity<?>checkCite(@RequestParam LocalDate date,@RequestParam String time){
-		List<BookCiteDTO>cites =  citeService.findByDateAndTime(date,time);
+	public ResponseEntity<?>checkCite(@RequestParam LocalDate date,@RequestParam String time, @RequestParam String endTime){
+		List<BookCiteDTO>cites =  citeService.findByDateAndTime(date,time, endTime);
 		return ResponseEntity.ok().body(cites);
 	}
 	
@@ -52,14 +66,14 @@ public class CiteController {
 		return ResponseEntity.ok().body(citeDTO);
 	}
 	
-	@Operation(summary = "Método para setear un empleado a una cita, solo los usuarios administradores podrán acceder aquí")
+	@Operation(summary = "Método para setear un empleado a una cita, podrás establecerlo automáticamente por la aplicación, solo los usuarios administradores podrán acceder aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PostMapping("/setWorker")
-	public ResponseEntity<?>setWorkerToCite(@RequestParam String idCite, @RequestParam String idWorker){
-		GetUserDTO worker = citeService.setManuallyWorker(idCite, idWorker);
+	public ResponseEntity<?>setWorkerToCite(@RequestParam String idCite, @RequestParam Optional<String> idWorker){
+		GetUserDTO worker = citeService.setWorker(idCite, idWorker.orElse(null));
 		return ResponseEntity.ok().body(worker);
 	}
 	

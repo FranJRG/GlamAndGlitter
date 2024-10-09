@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.CategoryDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.EmployeeScheduleDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 
@@ -18,8 +19,8 @@ public class ConvertToDTO {
 	 */
 
 	public static List<GetUserDTO>getUsersDTO(List<User>users){
-		return users.stream().map(user -> new GetUserDTO(user.getId(),user.getName(),
-				user.getEmail(),user.getPhone(),user.getRole(),getEmployeeScheduleDTO(user.getEmployeeSchedules()))).collect(Collectors.toList());
+		return users.stream().map(user -> new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
+				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications())).collect(Collectors.toList());
 	}
 
 	public static List<EmployeeScheduleDTO>getEmployeeScheduleDTO(List<EmployeeSchedule>employeeSchedule){
@@ -39,6 +40,11 @@ public class ConvertToDTO {
 	public static List<BookCiteDTO>convertCites(List<Cites>cites){
 		return cites.stream().map(cite -> new BookCiteDTO(cite.getDay(),cite.getStartTime(),
 				cite.getService().getId())).collect(Collectors.toList());
+	}
+	
+	public static List<GetPendingCiteDTO>getPendingCitesDTO(List<Cites>cites){
+		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),
+				cite.getService().getId(),cite.getUser().getName())).collect(Collectors.toList());
 	}
 
 }

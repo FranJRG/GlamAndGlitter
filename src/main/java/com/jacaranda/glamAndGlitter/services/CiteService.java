@@ -25,6 +25,7 @@ import com.jacaranda.glamAndGlitter.model.EmployeeSchedule;
 import com.jacaranda.glamAndGlitter.model.Service;
 import com.jacaranda.glamAndGlitter.model.User;
 import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.respository.CiteRepository;
 import com.jacaranda.glamAndGlitter.respository.EmployeeScheduleRepository;
@@ -56,8 +57,24 @@ public class CiteService {
 		return ConvertToDTO.convertCites(citeRepository.findAll());
 	}
 	
+	public List<GetPendingCiteDTO>getPendingCites(){
+		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByWorkerNull());
+	}
+	
 	
 	public BookCiteDTO addCite(BookCiteDTO citeDTO) {
+		
+		if(citeDTO.getDay() == null) {
+			throw new ValueNotValidException("Date can't be null");
+		}
+		
+		if(citeDTO.getIdService() == null) {
+			throw new ValueNotValidException("Id service can't be null");
+		}
+		
+		if(citeDTO.getStartTime() == null) {
+			throw new ValueNotValidException("Time can't be null");
+		}
 		
 		isValidDateAndTime(citeDTO.getDay(),citeDTO.getStartTime());
 		
@@ -68,6 +85,11 @@ public class CiteService {
 		
 		
 		Time endTime = calculateEndTime(citeDTO.getStartTime(), Integer.valueOf(service.getDuration()));
+		List<BookCiteDTO> cites = findByDateAndTime(citeDTO.getDay().toLocalDate(), String.valueOf(citeDTO.getStartTime()), String.valueOf(endTime));
+
+		if(!cites.isEmpty()) {
+			throw new ValueNotValidException("No employee for this date and time");
+		}
 		
 		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), endTime, userLoggued, service);
 		
@@ -76,7 +98,7 @@ public class CiteService {
 		return citeDTO;
 	}
 	
-	public GetUserDTO setManuallyWorker(String idCite, String idWorker) {
+	public GetUserDTO setWorker(String idCite, String idWorker) {
 		
 		Integer id = convertStringToInteger(idCite);
 		
@@ -85,7 +107,7 @@ public class CiteService {
 		
 		User worker = new User(); 
 		
-		if(cite.getWorker().getId() == null) {
+		if(idWorker == null || idWorker.isEmpty()) {
 			worker = setAutomaticallyWorkerToCite(cite.getDay(), cite.getStartTime());
 		}else {
 			Integer idWorkerInteger = convertStringToInteger(idWorker);
@@ -102,13 +124,13 @@ public class CiteService {
 		
 		checkTime(cite.getStartTime(),schedule);
         
+		cite.setWorker(worker);
         checkCiteAvailability(cite,worker);
         
-		cite.setWorker(worker);
 		citeRepository.save(cite);
 		
-		GetUserDTO workerDTO = new GetUserDTO(worker.getId(),worker.getName(),worker.getEmail(),
-				worker.getPhone(),worker.getRole(),ConvertToDTO.getEmployeeScheduleDTO(worker.getEmployeeSchedules()));
+		GetUserDTO workerDTO = new GetUserDTO(worker.getId(),worker.getName(),worker.getEmail(),worker.getPhone(),
+				worker.getRole(),ConvertToDTO.getEmployeeScheduleDTO(worker.getEmployeeSchedules()),worker.getCalendarNotifications(),worker.getSmsNotifications(),worker.getEmailNotifications());
 		
 		return workerDTO;
 	}
@@ -116,6 +138,10 @@ public class CiteService {
 	public User setAutomaticallyWorkerToCite(Date day, Time startTime) {
 		
 		String dayOfWeek = day.toLocalDate().getDayOfWeek().toString();
+		
+		if(dayOfWeek.equals("SUNDAY") || dayOfWeek.equals("SATURDAY")) {
+			throw new ValueNotValidException("We are closed on weekends");
+		}
 		
 		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(dayOfWeek);
 		
@@ -327,12 +353,36 @@ public class CiteService {
 		}
 	}
 	
-	public List<BookCiteDTO> findByDateAndTime(LocalDate date, String time){
+	public List<BookCiteDTO> findByDateAndTime(LocalDate date, String time, String endTime){
+		
+		String day = LocalDate.parse(date.toString()).getDayOfWeek().toString();
+		
+		if(day.equals("SUNDAY") || day.equals("SATURDAY")) {
+			throw new ValueNotValidException("We are closed on weekends");
+		}
 		
 		Time newTime = convertToTime(time);
+		Time newEndTime = convertToTime(endTime);
+		List<BookCiteDTO> citesDTO;
+		List<Cites> citesBetween = new ArrayList<Cites>();
 		
 		List<Cites>cites = citeRepository.findByDayAndStartTime(Date.valueOf(date), newTime);
-		List<BookCiteDTO> citesDTO =  ConvertToDTO.convertCites(cites);
+		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(day);
+		
+		if(cites.isEmpty()) {
+			
+	        schedules.forEach(schedule -> {
+	            List<Cites> tempCitesBetween = citeRepository.findCitesBetweenHours(
+	                schedule.getWorker().getId(), Date.valueOf(date), newTime, newEndTime
+	            );
+	            citesBetween.addAll(tempCitesBetween);
+	        });
+			
+			citesDTO =  ConvertToDTO.convertCites(citesBetween);
+		}else {
+			citesDTO =  ConvertToDTO.convertCites(cites);			
+		}
+		
 		return citesDTO;
 	}
 	

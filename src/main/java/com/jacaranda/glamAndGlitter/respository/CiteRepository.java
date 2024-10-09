@@ -16,6 +16,8 @@ public interface CiteRepository extends JpaRepository<Cites, Integer>{
 	
 	List<Cites> findByDayAndWorkerAndStartTime(Date day, User worker, Time startTime);
 	
+	List<Cites> findByWorkerNull();
+	
 	@Query("SELECT c FROM Cites c WHERE c.worker.id = :workerId AND c.day = :day AND ( " +
 	       "(:startTime BETWEEN c.startTime AND c.endTime) OR " +
 	       "(:endTime BETWEEN c.startTime AND c.endTime) OR " +
