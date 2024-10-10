@@ -57,6 +57,20 @@ public class CiteService {
 		return ConvertToDTO.convertCites(citeRepository.findAll());
 	}
 	
+	public List<GetPendingCiteDTO>myCites(String idString){
+		
+		Integer id = convertStringToInteger(idString);
+		
+		User user = userRepository.findById(id).orElseThrow(() -> 
+			new ElementNotFoundException("User not found"));
+		
+		if(!user.getRole().equals("user")) {
+			throw new ValueNotValidException("User must be user for this action");
+		}
+		
+		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByUser(user));
+	}
+	
 	public List<GetPendingCiteDTO>getPendingCites(){
 		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByWorkerNull());
 	}

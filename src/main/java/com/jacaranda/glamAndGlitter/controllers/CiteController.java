@@ -32,7 +32,7 @@ public class CiteController {
 	@Autowired
 	private CiteService citeService;
 	
-	@Operation(summary = "Método para saber si una cita ya existe por su hora y fecha")
+	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
@@ -40,6 +40,17 @@ public class CiteController {
 	@GetMapping("/pendingCites")
 	public ResponseEntity<?>pendingCites(){
 		List<GetPendingCiteDTO>cites =  citeService.getPendingCites();
+		return ResponseEntity.ok().body(cites);
+	}
+	
+	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/myCites/{id}")
+	public ResponseEntity<?>myCites(@PathVariable String id){
+		List<GetPendingCiteDTO>cites =  citeService.myCites(id);
 		return ResponseEntity.ok().body(cites);
 	}
 	

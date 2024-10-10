@@ -64,7 +64,7 @@ public class SecurityConfig {
 			requests
 				.requestMatchers("/signin","/users","/checkEmail","/services","/randomServices", 
 						"/categories","/servicesByCategory/*","/activateNotifications","/services/*",
-						"/checkCite","/addCite","/pendingCites","/setWorker").permitAll()
+						"/checkCite","/addCite","/pendingCites","/setWorker","/myCites/*").permitAll()
 				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode","/changePassword").permitAll()
 				//.requestMatchers(HttpMethod.POST,).authenticated()
 				.requestMatchers(HttpMethod.GET,"/user/*").authenticated()
