@@ -37,6 +37,28 @@ public class CiteController {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
+	@GetMapping("/workers/{id}")
+	public ResponseEntity<?>workers(@PathVariable String id){
+		List<GetUserDTO>users =  citeService.getWorkerByDate(id);
+		return ResponseEntity.ok().body(users);
+	}
+	
+	@Operation(summary = "Método para obtener una cita por su id, solo los administradores podrán ver un listado de citas")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/cite/{id}")
+	public ResponseEntity<?>getCiteById(@PathVariable String id){
+		GetPendingCiteDTO citeDTO =  citeService.getCite(id);
+		return ResponseEntity.ok().body(citeDTO);
+	}
+	
+	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
 	@GetMapping("/pendingCites")
 	public ResponseEntity<?>pendingCites(){
 		List<GetPendingCiteDTO>cites =  citeService.getPendingCites();

@@ -15,7 +15,6 @@ import com.jacaranda.glamAndGlitter.model.User;
 import com.jacaranda.glamAndGlitter.respository.UserRepository;
 import com.jacaranda.glamAndGlitter.utility.TokenUtils;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +29,6 @@ public class RequestFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
 			FilterChain chain) throws IOException, ServletException  {
-			
 		final String requestTokenHeader = request.getHeader("Authorization");
 		if (requestTokenHeader != null) {
 		    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken;
@@ -45,6 +43,7 @@ public class RequestFilter extends OncePerRequestFilter{
 		    		throw new RoleNotValidException("This token is not valid!");
 		    	}
 		    	
+		    	
 			    usernamePasswordAuthenticationToken = TokenUtils.getAuthentication(requestTokenHeader);
 				usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 			    // After setting the Authentication in the context, we specify
@@ -52,15 +51,11 @@ public class RequestFilter extends OncePerRequestFilter{
 			    // Spring Security Configurations successfully.
 			    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			    
-	           } catch (JwtException | RoleNotValidException e) {
+	           } catch (Exception e) {
 	                logger.error(e.getMessage());
 	                throw new RoleNotValidException("This token is not valid!");
-	            } catch (Exception e) {
-	                logger.error("Unexpected error: " + e.getMessage());
-	                throw new RoleNotValidException("This token is not valid!");
-	            }
+	           }
 		}
-	   
 			   
 		chain.doFilter(request, response);
 

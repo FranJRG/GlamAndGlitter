@@ -19,12 +19,12 @@ import com.jacaranda.glamAndGlitter.services.UserService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-	@Autowired
-	AuthEntryPoint authEntryPoint;
 	
 	@Autowired
-	RequestFilter requestFilter;
+	private AuthEntryPoint authEntryPoint;
+	
+	@Autowired
+	private RequestFilter requestFilter;
 	
     @Bean
     UserService userDetailsService() {
@@ -62,27 +62,29 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/signin","/users","/checkEmail","/services","/randomServices", 
-						"/categories","/servicesByCategory/*","/activateNotifications","/services/*",
-						"/checkCite","/addCite","/pendingCites","/setWorker","/myCites/*").permitAll()
-				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode","/changePassword").permitAll()
-				//.requestMatchers(HttpMethod.POST,).authenticated()
-				.requestMatchers(HttpMethod.GET,"/user/*").authenticated()
-				.requestMatchers(HttpMethod.PUT,"/modifyCite/*").authenticated()
-				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				//.requestMatchers(HttpMethod.GET,).hasAuthority("admin")
-				//.requestMatchers(HttpMethod.POST,).hasAuthority("admin")
+				.requestMatchers("/","/signin","/users","/checkEmail","/services","/randomServices", 
+						"/categories","/servicesByCategory/*","/services/*",
+						"/checkCite","/setWorker","/pendingCites","/cancelCite/*",
+						"/modifyCite/*","/activateNotifications","/addCite","/user/*","/myCites/*").permitAll()
+				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode",
+						"/changePassword").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
+				/*
+				.requestMatchers(HttpMethod.GET, "/user/*","/myCites/*").authenticated()
+				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite").authenticated()
+				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
+				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
+				.requestMatchers(HttpMethod.GET, "/pendingCites").hasAuthority("admin")
+				.requestMatchers(HttpMethod.POST, "/setWorker").hasAuthority("admin")
+				*/
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())
 	        .logout((logout) -> logout.permitAll().logoutSuccessUrl("/"));
+		
         http.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
-	
-
-	
 }

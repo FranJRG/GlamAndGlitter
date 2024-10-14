@@ -57,6 +57,18 @@ public class CiteService {
 		return ConvertToDTO.convertCites(citeRepository.findAll());
 	}
 	
+	public GetPendingCiteDTO getCite(String idString) {
+		Integer id = convertStringToInteger(idString);
+		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
+		GetPendingCiteDTO citeDTO = new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),cite.getUser().getName());
+		return citeDTO;
+	}
+	
+	/**
+	 * Modificar
+	 * @param idString
+	 * @return
+	 */
 	public List<GetPendingCiteDTO>myCites(String idString){
 		
 		Integer id = convertStringToInteger(idString);
@@ -365,6 +377,25 @@ public class CiteService {
 				throw new ValueNotValidException("Please choose a time that has not passed");
 			}			
 		}
+	}
+	
+	public List<GetUserDTO> getWorkerByDate(String idCite) {
+		Integer id = convertStringToInteger(idCite);
+		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
+		String day = LocalDate.parse(cite.getDay().toString()).getDayOfWeek().toString();
+		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(day);
+		List<User>users = new ArrayList<User>();
+		schedules.forEach(schedule -> {
+           User user = schedule.getWorker();
+           users.add(user);
+        });
+		
+		if (!users.isEmpty()) {
+		    return ConvertToDTO.getUsersDTO(users);
+		} else {
+		    throw new ValueNotValidException("No workers found");
+		}
+		
 	}
 	
 	public List<BookCiteDTO> findByDateAndTime(LocalDate date, String time, String endTime){
