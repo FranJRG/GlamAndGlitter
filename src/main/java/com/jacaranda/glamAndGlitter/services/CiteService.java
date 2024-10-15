@@ -410,6 +410,7 @@ public class CiteService {
 		Time newEndTime = convertToTime(endTime);
 		List<BookCiteDTO> citesDTO;
 		List<Cites> citesBetween = new ArrayList<Cites>();
+		List<User> workersAvailables = new ArrayList<User>();
 		
 		List<Cites>cites = citeRepository.findByDayAndStartTime(Date.valueOf(date), newTime);
 		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(day);
@@ -422,13 +423,59 @@ public class CiteService {
 	            );
 	            citesBetween.addAll(tempCitesBetween);
 	        });
-			
+			if(!citesBetween.isEmpty()) {
+				citesBetween.stream().forEach(cite -> {
+					workersAvailables.addAll(checkWorkersAvailables(cite,day));				
+				});
+			}
 			citesDTO =  ConvertToDTO.convertCites(citesBetween);
 		}else {
+			cites.stream().forEach(cite -> {
+				workersAvailables.addAll(checkWorkersAvailables(cite,day));				
+			});
 			citesDTO =  ConvertToDTO.convertCites(cites);			
 		}
 		
+		if(!workersAvailables.isEmpty()) {
+			citesDTO.clear();
+		}
+		
 		return citesDTO;
+	}
+	
+	public List<User> checkWorkersAvailables(Cites cite, String day) {
+	    List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
+	    List<User> availableWorkers = new ArrayList<User>();
+
+	    schedules.stream().forEach(schedule -> {
+	    	User worker = schedule.getWorker();
+	    	List<Cites>tempCites = new ArrayList<Cites>();
+	    	List<Cites>tempCitesDate = new ArrayList<Cites>();
+	    	
+	    	tempCites = citeRepository.findByDayAndWorkerAndStartTime(cite.getDay(), worker,  cite.getStartTime());
+	    	
+	    	if(tempCites.isEmpty()) {
+	    		tempCitesDate = citeRepository.findByDayAndStartTime(cite.getDay(), cite.getStartTime());
+	    	}
+	    	
+	    	List<Cites> tempCitesBetween = citeRepository.findCitesBetweenHours(
+                schedule.getWorker().getId(), cite.getDay(), cite.getStartTime(), cite.getEndTime()
+            );
+	    	
+	    	if(tempCitesDate.size() >= schedules.size()) {
+	    		throw new ValueNotValidException("There are already appointments for this day");
+	    	}
+	    	
+	    	if(tempCites.isEmpty() && tempCitesBetween.isEmpty()) {
+	    		availableWorkers.add(worker);
+	    	}
+	    });
+	    
+	    if(availableWorkers.isEmpty()) {
+	    	throw new ValueNotValidException("Not available workers");
+	    }
+	    
+	    return availableWorkers;
 	}
 	
 	public void checkTime(Time startTime, EmployeeSchedule schedule) {

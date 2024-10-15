@@ -62,22 +62,19 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-				.requestMatchers("/","/signin","/users","/checkEmail","/services","/randomServices", 
-						"/categories","/servicesByCategory/*","/services/*",
-						"/checkCite","/setWorker","/pendingCites","/cancelCite/*",
-						"/modifyCite/*","/activateNotifications","/addCite","/user/*","/myCites/*").permitAll()
+			.requestMatchers("/","/signin","/users","/checkEmail","/services","/randomServices", 
+					"/categories","/servicesByCategory/*","/services/*",
+					"/checkCite").permitAll()
 				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode",
 						"/changePassword").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
-				/*
-				.requestMatchers(HttpMethod.GET, "/user/*","/myCites/*").authenticated()
+				.requestMatchers(HttpMethod.GET, "/user/*","/myCites/*","/cite/*").authenticated()
 				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				.requestMatchers(HttpMethod.GET, "/pendingCites").hasAuthority("admin")
+				.requestMatchers(HttpMethod.GET, "/pendingCites", "/workers/*").hasAuthority("admin")
 				.requestMatchers(HttpMethod.POST, "/setWorker").hasAuthority("admin")
-				*/
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())
