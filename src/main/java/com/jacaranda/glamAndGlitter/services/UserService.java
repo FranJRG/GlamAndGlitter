@@ -50,6 +50,10 @@ public class UserService implements UserDetailsService{
 		return ConvertToDTO.getUsersDTO(userRepository.findAll());
 	}
 	
+	public List<GetUserDTO>findWorkerWithoutSchedule(){
+		return ConvertToDTO.getUsersDTO(userRepository.findByRoleAndEmployeeSchedulesNull("stylist"));
+	}
+	
 	/**
 	 * Método para obtener un usuario por su id
 	 */
@@ -91,6 +95,9 @@ public class UserService implements UserDetailsService{
 	 */
 	public RegisterUserDTO addUser(RegisterUserDTO registerUser) throws ValueNotValidException, UnsupportedEncodingException, MessagingException {
 		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		List<User>userLoggued = userRepository.findByEmail(auth.getName());
+		
 		if(registerUser.getName() == null || registerUser.getName().isBlank()) {
 			throw new ValueNotValidException("Name can´t be null");
 		}
@@ -123,6 +130,9 @@ public class UserService implements UserDetailsService{
 		String encodedPassword = encryptPassword(registerUser.getPassword());
 		User user = new User(registerUser.getName(),registerUser.getEmail(),registerUser.getPhone(),
 				encodedPassword,"user",false,false,false);
+		if(!userLoggued.isEmpty() && userLoggued.get(0).getRole().equals("admin")) {
+			user.setRole("stylist");
+		}
 		userRepository.save(user);
 		successRegistration(user);
 	

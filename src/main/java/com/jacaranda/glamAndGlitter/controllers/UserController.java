@@ -43,6 +43,17 @@ public class UserController {
 		return ResponseEntity.ok().body(user);
 	}
 	
+	@Operation(summary = "Endpoint obtener los estilistas sin horario de trabajo, solo los administradores podrán comprobar este endpoint")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/userWithoutSchedule")
+	public ResponseEntity<?> findWorkerWithoutSchedule(){
+		List<GetUserDTO> users = userService.findWorkerWithoutSchedule();
+		return ResponseEntity.ok().body(users);
+	}
+	
 	@Operation(summary = "Endpoint para comprobar si existe un usuario por un email, cualquier usuario podrá acceder")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),

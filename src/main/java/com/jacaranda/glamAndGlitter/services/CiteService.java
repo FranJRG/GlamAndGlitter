@@ -57,6 +57,10 @@ public class CiteService {
 		return ConvertToDTO.convertCites(citeRepository.findAll());
 	}
 	
+	public List<GetPendingCiteDTO> getPendingCites(){
+		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByDayAfterToday(Date.valueOf(LocalDate.now())));
+	}
+	
 	public GetPendingCiteDTO getCite(String idString) {
 		Integer id = convertStringToInteger(idString);
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
@@ -82,11 +86,6 @@ public class CiteService {
 		
 		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByUser(user));
 	}
-	
-	public List<GetPendingCiteDTO>getPendingCites(){
-		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByWorkerNull());
-	}
-	
 	
 	public BookCiteDTO addCite(BookCiteDTO citeDTO) {
 		
@@ -117,7 +116,9 @@ public class CiteService {
 			throw new ValueNotValidException("No employee for this date and time");
 		}
 		
-		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), endTime, userLoggued, service);
+		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), endTime);
+		
+		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), worker, endTime,userLoggued, service);
 		
 		citeRepository.save(cite);
 		
@@ -192,7 +193,7 @@ public class CiteService {
 			List<Cites> cites = citeRepository.findByDayAndWorkerAndStartTime(day, worker, startTime);
 			
 	        List<Cites> citesAux = citeRepository.findCitesBetweenHours(
-	                worker.getId(), day, startTime, calculateEndTime(startTime, 120));
+	                worker.getId(), day, startTime, calculateEndTime(startTime, 30));
 			
 			if(cites.isEmpty() && citesAux.isEmpty()) {
 				return worker;

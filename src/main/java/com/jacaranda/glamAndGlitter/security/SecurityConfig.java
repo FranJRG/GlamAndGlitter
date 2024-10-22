@@ -73,7 +73,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				.requestMatchers(HttpMethod.GET, "/pendingCites", "/workers/*").hasAuthority("admin")
+				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule").hasAuthority("admin")
 				.requestMatchers(HttpMethod.POST, "/setWorker").hasAuthority("admin")
 				.anyRequest().denyAll();
 	        })

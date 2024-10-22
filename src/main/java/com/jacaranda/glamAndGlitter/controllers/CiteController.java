@@ -3,7 +3,6 @@ package com.jacaranda.glamAndGlitter.controllers;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,8 +58,8 @@ public class CiteController {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
-	@GetMapping("/pendingCites")
-	public ResponseEntity<?>pendingCites(){
+	@GetMapping("/cites")
+	public ResponseEntity<?>cites(){
 		List<GetPendingCiteDTO>cites =  citeService.getPendingCites();
 		return ResponseEntity.ok().body(cites);
 	}
@@ -75,7 +74,6 @@ public class CiteController {
 		List<GetPendingCiteDTO>cites =  citeService.myCites(id);
 		return ResponseEntity.ok().body(cites);
 	}
-	
 	
 	@Operation(summary = "Método para saber si una cita ya existe por su hora y fecha")
 	@ApiResponses(value = {
@@ -105,8 +103,8 @@ public class CiteController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PostMapping("/setWorker")
-	public ResponseEntity<?>setWorkerToCite(@RequestParam String idCite, @RequestParam Optional<String> idWorker){
-		GetUserDTO worker = citeService.setWorker(idCite, idWorker.orElse(null));
+	public ResponseEntity<?>setWorkerToCite(@RequestParam String idCite, @RequestParam String idWorker){
+		GetUserDTO worker = citeService.setWorker(idCite, idWorker);
 		return ResponseEntity.ok().body(worker);
 	}
 	

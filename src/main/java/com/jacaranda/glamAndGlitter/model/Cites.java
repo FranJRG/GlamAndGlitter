@@ -53,10 +53,11 @@ public class Cites {
 		super();
 	}
 	
-	public Cites(Date day, Time startTime, Time endTime,User user, Service service) {
+	public Cites(Date day, Time startTime,User worker, Time endTime,User user, Service service) {
 		super();
 		this.day = day;
 		this.startTime = startTime;
+		this.worker = worker;
 		this.user = user;
 		this.service = service;
 		this.endTime = endTime;
