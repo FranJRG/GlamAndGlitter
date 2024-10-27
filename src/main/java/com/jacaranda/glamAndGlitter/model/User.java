@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "Users")
 public class User implements UserDetails{
-	
+		
 	/**
 	 * 
 	 */
@@ -41,8 +41,6 @@ public class User implements UserDetails{
 	
 	private Boolean emailNotifications;
 	
-	private Boolean smsNotifications;
-	
 	private Boolean calendarNotifications;
 	
 	@OneToMany(mappedBy = "user")
@@ -62,7 +60,7 @@ public class User implements UserDetails{
 	}
 
 	public User(String name, String email, String phone, String password, String role,
-			Boolean emailNotifications, Boolean smsNotifications, Boolean calendarNotifications) {
+			Boolean emailNotifications, Boolean calendarNotifications) {
 		super();
 		this.name = name;
 		this.email = email;
@@ -70,7 +68,6 @@ public class User implements UserDetails{
 		this.password = password;
 		this.role = role;
 		this.emailNotifications = emailNotifications;
-		this.smsNotifications = smsNotifications;
 		this.calendarNotifications = calendarNotifications;
 	}
 
@@ -128,14 +125,6 @@ public class User implements UserDetails{
 
 	public void setEmailNotifications(Boolean emailNotifications) {
 		this.emailNotifications = emailNotifications;
-	}
-
-	public Boolean getSmsNotifications() {
-		return smsNotifications;
-	}
-
-	public void setSmsNotifications(Boolean smsNotifications) {
-		this.smsNotifications = smsNotifications;
 	}
 
 	public Boolean getCalendarNotifications() {
@@ -227,6 +216,5 @@ public class User implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
-
-
+	
 }

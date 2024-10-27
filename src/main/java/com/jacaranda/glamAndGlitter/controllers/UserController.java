@@ -134,10 +134,9 @@ public class UserController {
 			@ApiResponse(responseCode = "200", description = "Complete")
 	})
 	@PostMapping("/activateNotifications")
-	public ResponseEntity<?>activateNotifications(@RequestParam Optional<Boolean> emailNotifications, 
-			@RequestParam Optional<Boolean> smsNotifications, @RequestParam Optional<Boolean> calendarNotifications){
+	public ResponseEntity<?>activateNotifications(@RequestParam Optional<Boolean> emailNotifications, @RequestParam Optional<Boolean> calendarNotifications){
 		
-		GetUserDTO userDTO = userService.updateNotifications(emailNotifications.orElse(null),smsNotifications.orElse(null),calendarNotifications.orElse(null));
+		GetUserDTO userDTO = userService.updateNotifications(emailNotifications.orElse(null),calendarNotifications.orElse(null));
 		return ResponseEntity.ok().body(userDTO);
 		
 	}

@@ -157,7 +157,7 @@ public class CiteService {
 		citeRepository.save(cite);
 		
 		GetUserDTO workerDTO = new GetUserDTO(worker.getId(),worker.getName(),worker.getEmail(),worker.getPhone(),
-				worker.getRole(),ConvertToDTO.getEmployeeScheduleDTO(worker.getEmployeeSchedules()),worker.getCalendarNotifications(),worker.getSmsNotifications(),worker.getEmailNotifications());
+				worker.getRole(),ConvertToDTO.getEmployeeScheduleDTO(worker.getEmployeeSchedules()),worker.getCalendarNotifications(),worker.getEmailNotifications());
 		
 		return workerDTO;
 	}

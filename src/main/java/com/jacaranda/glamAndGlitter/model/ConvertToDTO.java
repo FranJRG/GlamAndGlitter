@@ -20,7 +20,7 @@ public class ConvertToDTO {
 
 	public static List<GetUserDTO>getUsersDTO(List<User>users){
 		return users.stream().map(user -> new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
-				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications())).collect(Collectors.toList());
+				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),user.getCalendarNotifications(),user.getEmailNotifications())).collect(Collectors.toList());
 	}
 
 	public static List<EmployeeScheduleDTO>getEmployeeScheduleDTO(List<EmployeeSchedule>employeeSchedule){

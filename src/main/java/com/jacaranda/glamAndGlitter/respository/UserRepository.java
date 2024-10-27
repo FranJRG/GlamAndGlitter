@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	
 	List<User> findByRoleAndEmployeeSchedulesNull(String role);
 	
+	List<User> findAllByEmailNotifications(Boolean emailNotifications);
+	
 }

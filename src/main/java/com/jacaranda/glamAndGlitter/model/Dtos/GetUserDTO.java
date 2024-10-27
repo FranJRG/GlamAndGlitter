@@ -18,8 +18,6 @@ public class GetUserDTO {
 	
 	private Boolean emailNotifications;
 	
-	private Boolean smsNotifications;
-	
 	private Boolean calendarNotifications;
 	
 	private List<EmployeeScheduleDTO>employeeSchedulesDTO = new ArrayList<EmployeeScheduleDTO>();
@@ -29,7 +27,7 @@ public class GetUserDTO {
 	}
 	
 	public GetUserDTO(Integer id, String name, String email, String phone, String role,
-			List<EmployeeScheduleDTO> employeeSchedulesDTO, Boolean calendarNotifications, Boolean smsNotifications, Boolean emailNotifications) {
+			List<EmployeeScheduleDTO> employeeSchedulesDTO, Boolean calendarNotifications, Boolean emailNotifications) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -38,7 +36,6 @@ public class GetUserDTO {
 		this.role = role;
 		this.employeeSchedulesDTO = employeeSchedulesDTO;
 		this.calendarNotifications = calendarNotifications;
-		this.smsNotifications = smsNotifications;
 		this.emailNotifications = emailNotifications;
 	}
 
@@ -97,15 +94,7 @@ public class GetUserDTO {
 	public void setEmailNotifications(Boolean emailNotifications) {
 		this.emailNotifications = emailNotifications;
 	}
-
-	public Boolean getSmsNotifications() {
-		return smsNotifications;
-	}
-
-	public void setSmsNotifications(Boolean smsNotifications) {
-		this.smsNotifications = smsNotifications;
-	}
-
+	
 	public Boolean getCalendarNotifications() {
 		return calendarNotifications;
 	}

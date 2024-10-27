@@ -12,10 +12,10 @@ public class EmployeeScheduleDTO {
 		super();
 	}
 
-	public EmployeeScheduleDTO(String turn, String day) {
+	public EmployeeScheduleDTO(String day,String turn) {
 		super();
-		this.turn = turn;
 		this.day = day;
+		this.turn = turn;
 	}
 
 	public String getTurn() {

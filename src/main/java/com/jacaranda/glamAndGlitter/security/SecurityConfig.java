@@ -74,7 +74,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
 				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule").hasAuthority("admin")
-				.requestMatchers(HttpMethod.POST, "/setWorker").hasAuthority("admin")
+				.requestMatchers(HttpMethod.POST, "/setWorker","/setSchedule/*").hasAuthority("admin")
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())

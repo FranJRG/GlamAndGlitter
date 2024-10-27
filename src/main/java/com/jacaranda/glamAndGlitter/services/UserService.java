@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService{
 		
 		GetUserDTO userDTO = new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
 				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),
-				user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications());
+				user.getCalendarNotifications(),user.getEmailNotifications());
 		return userDTO;
 	}
 	
@@ -129,7 +129,7 @@ public class UserService implements UserDetailsService{
 		}
 		String encodedPassword = encryptPassword(registerUser.getPassword());
 		User user = new User(registerUser.getName(),registerUser.getEmail(),registerUser.getPhone(),
-				encodedPassword,"user",false,false,false);
+				encodedPassword,"user",false,false);
 		if(!userLoggued.isEmpty() && userLoggued.get(0).getRole().equals("admin")) {
 			user.setRole("stylist");
 		}
@@ -203,8 +203,7 @@ public class UserService implements UserDetailsService{
 		return user;
 	}
 	
-	public GetUserDTO updateNotifications(Boolean emailNotifications,
-			Boolean smsNotifications,Boolean calendarNotifications) {
+	public GetUserDTO updateNotifications(Boolean emailNotifications, Boolean calendarNotifications) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userRepository.findByEmail(auth.getName()).get(0);
@@ -213,17 +212,13 @@ public class UserService implements UserDetailsService{
 			user.setEmailNotifications(emailNotifications);
 		}
 		
-		if(smsNotifications != null) {
-			user.setSmsNotifications(smsNotifications);
-		}
-		
 		if(calendarNotifications != null) {
 			user.setCalendarNotifications(calendarNotifications);
 		}
 		
 		GetUserDTO userDTO = new GetUserDTO(user.getId(),user.getName(),user.getEmail(),user.getPhone(),
 				user.getRole(),ConvertToDTO.getEmployeeScheduleDTO(user.getEmployeeSchedules()),
-				user.getCalendarNotifications(),user.getSmsNotifications(),user.getEmailNotifications());
+				user.getCalendarNotifications(),user.getEmailNotifications());
 		
 		userRepository.save(user);
 		return userDTO;

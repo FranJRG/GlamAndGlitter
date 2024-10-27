@@ -2,6 +2,8 @@ package com.jacaranda.glamAndGlitter.respository;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,6 +34,18 @@ public interface CiteRepository extends JpaRepository<Cites, Integer>{
 	                                @Param("endTime") Time endTime);
 	
 	List<Cites> findByDayAndStartTime(Date date, Time startTime);
+	
+	@Query("SELECT c FROM Cites c WHERE c.user.id = :userId AND "
+	        + "(c.day = :tomorrowDate OR "
+	        + "(c.day = :todayDate AND c.startTime BETWEEN :currentTime AND :oneHourLater))")
+	List<Cites> findUpcomingAppointments(@Param("userId") Integer userId, 
+	                                     @Param("tomorrowDate") LocalDate tomorrowDate, 
+	                                     @Param("todayDate") LocalDate todayDate, 
+	                                     @Param("currentTime") LocalTime currentTime, 
+	                                     @Param("oneHourLater") LocalTime oneHourLater);
+
+
+
 
 	
 }

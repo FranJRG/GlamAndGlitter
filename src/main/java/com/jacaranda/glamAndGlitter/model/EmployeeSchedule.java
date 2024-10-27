@@ -30,9 +30,8 @@ public class EmployeeSchedule {
 		super();
 	}
 
-	public EmployeeSchedule(Integer id, String turn, String day, User worker) {
+	public EmployeeSchedule(User worker, String turn, String day) {
 		super();
-		this.id = id;
 		this.turn = turn;
 		this.day = day;
 		this.worker = worker;
