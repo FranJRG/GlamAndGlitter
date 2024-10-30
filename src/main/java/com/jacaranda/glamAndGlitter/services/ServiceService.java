@@ -24,10 +24,19 @@ public class ServiceService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
+	/**
+	 * Método para obtener todos los servicios
+	 * @return
+	 */
 	public List<ServiceDTO> getServices(){
 		return ConvertToDTO.getServicesDTO(serviceRepository.findAll());
 	}
 	
+	/**
+	 * Método para obtener servicios por su id y que esten activos
+	 * @param idString
+	 * @return
+	 */
 	public ServiceDTO getService(String idString){
 		Integer id;
 		
@@ -50,12 +59,21 @@ public class ServiceService {
 		return service;
 	}
 	
+	/**
+	 * Método para obtener servicios aleatorios
+	 * @return
+	 */
 	public List<ServiceDTO> getRandomServices(){
 		List<ServiceDTO>servicesDTO = ConvertToDTO.getServicesDTO(serviceRepository.findAll());
 		Collections.shuffle(servicesDTO);
 		return servicesDTO.stream().limit(15).collect(Collectors.toList());
 	}
 	
+	/**
+	 * Métodos para obtener servicios por su categoría
+	 * @param idCategory
+	 * @return
+	 */
 	public List<ServiceDTO> getServicesByCategory(String idCategory){
 		Integer id;
 		

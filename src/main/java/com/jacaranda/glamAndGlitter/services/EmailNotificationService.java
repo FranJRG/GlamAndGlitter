@@ -42,6 +42,10 @@ public class EmailNotificationService {
         start(); // Inicia el programador de notificaciones
     }
 
+    /**
+     * Método para comenzar la ejecución
+     * Se ejecutará de hora en hora
+     */
     public void start() {
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -52,6 +56,14 @@ public class EmailNotificationService {
         }, 0, 1, TimeUnit.HOURS);
     }
 
+    /**
+     * Método para enviar las notificaciones
+     * Obtendremos los usuarios que tengan las notificaciones a true
+     * Buscamos si algunos de esos usuarios tienen citas pendientes dentro de 1 hora o de 1 dia
+     * Enviamos el mensaje
+     * @throws UnsupportedEncodingException
+     * @throws MessagingException
+     */
     public void sendNotifications() throws UnsupportedEncodingException, MessagingException {
         List<User> users = userRepository.findAllByEmailNotifications(true);
 
@@ -69,6 +81,16 @@ public class EmailNotificationService {
         }
     }
 
+    /**
+     * Método para enviar el correo electrónico
+     * @param name
+     * @param email
+     * @param cite
+     * @param oneDayBefore
+     * @param oneHourBefore
+     * @throws MessagingException
+     * @throws UnsupportedEncodingException
+     */
     private void sendEmail(String name, String email, Cites cite, boolean oneDayBefore, boolean oneHourBefore)
             throws MessagingException, UnsupportedEncodingException {
 
@@ -101,12 +123,22 @@ public class EmailNotificationService {
         mailSender.send(message);
     }
 
+    /**
+     * Método para comprobar si la cita es un dia antes
+     * @param cite
+     * @return
+     */
     private boolean isOneDayBefore(Cites cite) {
         LocalDate today = LocalDate.now();
         LocalDate appointmentDate = cite.getDay().toLocalDate();
         return appointmentDate.isEqual(today.plusDays(1));
     }
 
+    /**
+     * Método para comprobar si la cita es 1 hora antes
+     * @param cite
+     * @return
+     */
     private boolean isWithinOneHourOrLess(Cites cite) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = LocalDateTime.of(cite.getDay().toLocalDate(), cite.getStartTime().toLocalTime());
@@ -115,6 +147,11 @@ public class EmailNotificationService {
         return now.isBefore(startTime) && now.plusHours(1).isAfter(startTime);
     }
 
+    /**
+     * Método para obtener las citas pendientes dentro de 1 dia o de 1 hora
+     * @param userId
+     * @return
+     */
     public List<Cites> findUpcomingAppointments(Integer userId) {
         // Fecha y hora actuales
         LocalDateTime now = LocalDateTime.now();
@@ -130,6 +167,9 @@ public class EmailNotificationService {
     }
 
 
+    /**
+     * Método para terminar la ejecución
+     */
     public void stop() {
         scheduler.shutdown();
         try {

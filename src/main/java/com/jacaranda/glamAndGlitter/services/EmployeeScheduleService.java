@@ -26,6 +26,16 @@ public class EmployeeScheduleService {
 	@Autowired
 	private CiteService citeService;
 	
+	/**
+	 * Método para añadir un horario
+	 * Comprobamos que le pasemos los datos necesarios
+	 * Buscamos el trabajador por el id y comprobamos que sea trabajador y no usuario
+	 * Creamos el horario y devolvemos la lista de horarios creados
+	 * @param idString
+	 * @param day
+	 * @param turn
+	 * @return
+	 */
 	public List<EmployeeScheduleDTO> addSchedule(String idString, String day,String turn) {
 		
 		Integer id = citeService.convertStringToInteger(idString);

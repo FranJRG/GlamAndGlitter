@@ -203,6 +203,14 @@ public class UserService implements UserDetailsService{
 		return user;
 	}
 	
+	/**
+	 * Método para actualizar las notificaciones
+	 * Buscaremos al usuario logueado y depende de la notificacion que le pase las estableceremos
+	 * Devolvemos un userDTO
+	 * @param emailNotifications
+	 * @param calendarNotifications
+	 * @return userDTO
+	 */
 	public GetUserDTO updateNotifications(Boolean emailNotifications, Boolean calendarNotifications) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -57,10 +57,19 @@ public class CiteService {
 		return ConvertToDTO.convertCites(citeRepository.findAll());
 	}
 	
+	/**
+	 * Método para obtener citas pendientes
+	 * @return
+	 */
 	public List<GetPendingCiteDTO> getPendingCites(){
 		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByDayAfterToday(Date.valueOf(LocalDate.now())));
 	}
 	
+	/**
+	 * Método para obtener citas de un usuario
+	 * @param idString
+	 * @return
+	 */
 	public GetPendingCiteDTO getCite(String idString) {
 		Integer id = convertStringToInteger(idString);
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
@@ -87,6 +96,14 @@ public class CiteService {
 		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByUser(user));
 	}
 	
+	/**
+	 * Método para añadir una cita
+	 * Comprobamos que esten los campos requeridos
+	 * Comprobamos la validez de los datos y disponibilidad de los mismos
+	 * Por defecto establecemos un empleado de forma automática
+	 * @param citeDTO
+	 * @return
+	 */
 	public BookCiteDTO addCite(BookCiteDTO citeDTO) {
 		
 		if(citeDTO.getDay() == null) {
@@ -125,6 +142,13 @@ public class CiteService {
 		return citeDTO;
 	}
 	
+	/**
+	 * Método para establecer el trabajador manualmente
+	 * Buscamos el trabajador y comprobamos su disponibilidad 
+	 * @param idCite
+	 * @param idWorker
+	 * @return
+	 */
 	public GetUserDTO setWorker(String idCite, String idWorker) {
 		
 		Integer id = convertStringToInteger(idCite);
@@ -162,6 +186,17 @@ public class CiteService {
 		return workerDTO;
 	}
 	
+	/**
+	 * Método para que el sistema establezca un usuario automáticamente
+	 * Comprobamos que no sea fin de semana y buscamos el horario por el dia de la semana
+	 * Filtramos los horarios disponibles entre el horario que haya seleccionado el usuario
+	 * Mientras el index (variable temporal) sea menor el tamaño de la lista de trabajadores buscamos si un trabajador no tiene cita a esa hora
+	 * Devolvemos el primer trabajador encontrado
+	 * Establecemos un endTime predeterminado de 30 minutos
+	 * @param day
+	 * @param startTime
+	 * @return
+	 */
 	public User setAutomaticallyWorkerToCite(Date day, Time startTime) {
 		
 		String dayOfWeek = day.toLocalDate().getDayOfWeek().toString();
@@ -206,6 +241,14 @@ public class CiteService {
 		
 	}
 	
+	/**
+	 * Método para actualziar una cita
+	 * Comprobamos que sea un administrador o el id del usuario sea el mismo que el de la cita para poder modificarla
+	 * Comprobamos que los valores sean válidos y los actualizamos
+	 * @param idCite
+	 * @param newCiteDTO
+	 * @return
+	 */
 	public BookCiteDTO updateCite(String idCite,BookCiteDTO newCiteDTO) {
 		
 		Integer id = convertStringToInteger(idCite);
@@ -257,6 +300,14 @@ public class CiteService {
 		
 	}
 	
+	/**
+	 * Método para eliminar una cita
+	 * Enviamos un mensaje a todos aquellos que sean administradores o estilistas
+	 * @param idCite
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws MessagingException
+	 */
 	public BookCiteDTO removeCite(String idCite) throws UnsupportedEncodingException, MessagingException {
 		Integer id = convertStringToInteger(idCite);
 		
@@ -270,7 +321,7 @@ public class CiteService {
 		if(userLoggued.getRole().equals("admin") || userLoggued.getId().equals(cite.getUser().getId())) {
 			
 			if(cite.getDay().toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
-			    throw new ValueNotValidException("Sorry, you cannot change a cite that is today or in the past.");
+			    throw new ValueNotValidException("Sorry, you cannot remove a cite that is today or in the past.");
 			}
 			
 			citeRepository.delete(cite);
@@ -292,6 +343,12 @@ public class CiteService {
 		return citeDTO;
 	}
 	
+	/**
+	 * Método para obtener un horario de trabajo
+	 * @param date
+	 * @param worker
+	 * @return
+	 */
 	public EmployeeSchedule findEmployeeSchedule(Date date,User worker) {
 		
 		String day = LocalDate.parse(date.toString()).getDayOfWeek().toString();
@@ -305,6 +362,12 @@ public class CiteService {
 		}
 	}
 	
+	/**
+	 * Método para obtener la validez de una cita
+	 * Comprobamos si la cita puede establecerse para ese trabajador sin que haya cita a esa hora o entre horas
+	 * @param cite
+	 * @param worker
+	 */
 	public void checkCiteAvailability(Cites cite, User worker) {
 		
 		List<Cites> cites = citeRepository.findByDayAndWorkerAndStartTime(cite.getDay(), worker, cite.getStartTime());
@@ -322,6 +385,13 @@ public class CiteService {
         
 	}
 	
+	/**
+	 * Método para enviar un mensaje de alerta de cita cancelada al usuario
+	 * @param user
+	 * @param cite
+	 * @throws MessagingException
+	 * @throws UnsupportedEncodingException
+	 */
 	public void sendAlertMessage(User user, Cites cite) throws MessagingException, UnsupportedEncodingException {
 		 String toAddress = user.getEmail();
 
@@ -359,6 +429,11 @@ public class CiteService {
 	    mailSender.send(message);
 	}
 	
+	/**
+	 * Método para comprobar si la fecha y el horario es válido dentro del horario de trabajo
+	 * @param date
+	 * @param startTime
+	 */
 	public void isValidDateAndTime(Date date, Time startTime) {
 		
 		if(date != null) {
@@ -380,6 +455,12 @@ public class CiteService {
 		}
 	}
 	
+	/**
+	 * Método para obtener trabajadores por una fecha
+	 * Obtenemos los trabajadores del horario y los devolvemos
+	 * @param idCite
+	 * @return
+	 */
 	public List<GetUserDTO> getWorkerByDate(String idCite) {
 		Integer id = convertStringToInteger(idCite);
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
@@ -399,6 +480,15 @@ public class CiteService {
 		
 	}
 	
+	/**
+	 * Buscamos citas por su fecha y su horario
+	 * Si la cita es sabado o domingo lanzamos excepcion
+	 * Si hay algun trabajador disponible devolvemos la lista de citas vacias
+	 * @param date
+	 * @param time
+	 * @param endTime
+	 * @return
+	 */
 	public List<BookCiteDTO> findByDateAndTime(LocalDate date, String time, String endTime){
 		
 		String day = LocalDate.parse(date.toString()).getDayOfWeek().toString();
@@ -417,13 +507,14 @@ public class CiteService {
 		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(day);
 		
 		if(cites.isEmpty()) {
-			
+			//Por cada horario comprobamos si hay alguna cita ya disponible
 	        schedules.forEach(schedule -> {
 	            List<Cites> tempCitesBetween = citeRepository.findCitesBetweenHours(
 	                schedule.getWorker().getId(), Date.valueOf(date), newTime, newEndTime
 	            );
 	            citesBetween.addAll(tempCitesBetween);
 	        });
+	        //Si no esta vacía añadimos a la lista de trabajadores si hay alguno
 			if(!citesBetween.isEmpty()) {
 				citesBetween.stream().forEach(cite -> {
 					workersAvailables.addAll(checkWorkersAvailables(cite,day));				
@@ -444,6 +535,15 @@ public class CiteService {
 		return citesDTO;
 	}
 	
+	/**
+	 * Método para obtener los trabajadores disponibles por la cita y el dia
+	 * Buscamos el horario del dia concreto y recorremos la lista
+	 * Creamos un trabajador por cada instancia de la lista
+	 * Comprobamos si hay disponibilidad de trabajadores
+	 * @param cite
+	 * @param day
+	 * @return
+	 */
 	public List<User> checkWorkersAvailables(Cites cite, String day) {
 	    List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
 	    List<User> availableWorkers = new ArrayList<User>();
@@ -466,7 +566,7 @@ public class CiteService {
 	    	if(tempCitesDate.size() >= schedules.size()) {
 	    		throw new ValueNotValidException("There are already appointments for this day");
 	    	}
-	    	
+	    	 //Si el trabajador no tiene citas lo añadimos a la lista de trabajadores disponibles
 	    	if(tempCites.isEmpty() && tempCitesBetween.isEmpty()) {
 	    		availableWorkers.add(worker);
 	    	}
@@ -479,6 +579,11 @@ public class CiteService {
 	    return availableWorkers;
 	}
 	
+	/**
+	 * Método para comprobar el horario y el turno
+	 * @param startTime
+	 * @param schedule
+	 */
 	public void checkTime(Time startTime, EmployeeSchedule schedule) {
 		
 		if((startTime.after(Time.valueOf("09:00:00")) && startTime.before(Time.valueOf("13:00:00"))) && (schedule.getTurn().equals("Afternoon"))) {
@@ -493,6 +598,10 @@ public class CiteService {
 		
 	}
 	
+	/**
+	 * Método para obtener el usuario logueado
+	 * @return
+	 */
 	public User loginApp() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<User> users = userRepository.findByEmail(auth.getName());
@@ -504,6 +613,11 @@ public class CiteService {
 		return users.get(0);
 	}
 	
+	/**
+	 * Método para convertir de String a Integer
+	 * @param idString
+	 * @return
+	 */
 	public Integer convertStringToInteger(String idString) {
 		Integer id;
 		try {
@@ -515,6 +629,11 @@ public class CiteService {
 		return id;
 	}
 	
+	/**
+	 * Método para convertir el tiempo a formato HH:mm:ss
+	 * @param time
+	 * @return
+	 */
 	public Time convertToTime(String time) {
 		Time newTime;
 		
@@ -526,6 +645,12 @@ public class CiteService {
 		return newTime;
 	}
 
+	/**
+	 * Método para calcular el tiempo final
+	 * @param startTime
+	 * @param durationInMinutes
+	 * @return
+	 */
     public Time calculateEndTime(Time startTime, int durationInMinutes) {
         long durationInMillis = durationInMinutes * 60 * 1000;
         return new Time(startTime.getTime() + durationInMillis);
