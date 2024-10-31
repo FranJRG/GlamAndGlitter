@@ -289,7 +289,8 @@ public class CiteService {
 				checkCiteAvailability(cite, cite.getWorker());
 				
 			}
-			
+			User worker = setAutomaticallyWorkerToCite(newCiteDTO.getDay(), newCiteDTO.getStartTime());
+			cite.setWorker(worker);
 			citeRepository.save(cite);
 		}else {
 			throw new RoleNotValidException("Only admins can update cites of other users");
