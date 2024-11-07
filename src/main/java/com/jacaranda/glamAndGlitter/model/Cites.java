@@ -34,6 +34,8 @@ public class Cites {
 	
 	private Time endTime;
 	
+	private String eventId;
+	
 	@ManyToOne
 	@JoinColumn(name = "idUser")
 	private User user;
@@ -53,7 +55,7 @@ public class Cites {
 		super();
 	}
 	
-	public Cites(Date day, Time startTime,User worker, Time endTime,User user, Service service) {
+	public Cites(Date day, Time startTime,User worker, Time endTime,User user, Service service, String eventId) {
 		super();
 		this.day = day;
 		this.startTime = startTime;
@@ -61,6 +63,7 @@ public class Cites {
 		this.user = user;
 		this.service = service;
 		this.endTime = endTime;
+		this.eventId = eventId;
 	}
 
 	public Integer getId() {
@@ -113,6 +116,14 @@ public class Cites {
 
 	public Service getService() {
 		return service;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	public void setService(Service service) {

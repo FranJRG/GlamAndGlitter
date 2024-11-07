@@ -15,6 +15,8 @@ public class BookCiteDTO {
 	private Time startTime;
 	
 	private Integer idService;
+	
+	private String eventId;
 
 	public BookCiteDTO() {
 		super();
@@ -49,6 +51,14 @@ public class BookCiteDTO {
 
 	public void setIdService(Integer idService) {
 		this.idService = idService;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	@Override

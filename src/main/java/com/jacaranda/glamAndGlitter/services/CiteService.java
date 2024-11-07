@@ -73,7 +73,7 @@ public class CiteService {
 	public GetPendingCiteDTO getCite(String idString) {
 		Integer id = convertStringToInteger(idString);
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
-		GetPendingCiteDTO citeDTO = new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),cite.getUser().getName());
+		GetPendingCiteDTO citeDTO = new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),cite.getUser().getName(),cite.getEventId());
 		return citeDTO;
 	}
 	
@@ -135,7 +135,7 @@ public class CiteService {
 		
 		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), endTime);
 		
-		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), worker, endTime,userLoggued, service);
+		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), worker, endTime,userLoggued, service, citeDTO.getEventId());
 		
 		citeRepository.save(cite);
 		
@@ -286,11 +286,14 @@ public class CiteService {
 				
 				EmployeeSchedule schedule = findEmployeeSchedule(cite.getDay(),cite.getWorker());
 				checkTime(cite.getStartTime(),schedule);
-				checkCiteAvailability(cite, cite.getWorker());
 				
 			}
-			User worker = setAutomaticallyWorkerToCite(newCiteDTO.getDay(), newCiteDTO.getStartTime());
-			cite.setWorker(worker);
+			
+			if(!newCiteDTO.getDay().equals(cite.getDay()) && !newCiteDTO.getStartTime().equals(cite.getStartTime())) {
+				User worker = setAutomaticallyWorkerToCite(newCiteDTO.getDay(), newCiteDTO.getStartTime());				
+				cite.setWorker(worker);
+				checkCiteAvailability(cite, cite.getWorker());
+			}
 			citeRepository.save(cite);
 		}else {
 			throw new RoleNotValidException("Only admins can update cites of other users");
@@ -502,7 +505,7 @@ public class CiteService {
 		Time newEndTime = convertToTime(endTime);
 		List<BookCiteDTO> citesDTO;
 		List<Cites> citesBetween = new ArrayList<Cites>();
-		List<User> workersAvailables = new ArrayList<User>();
+		List<GetUserDTO> workersAvailables = new ArrayList<GetUserDTO>();
 		
 		List<Cites>cites = citeRepository.findByDayAndStartTime(Date.valueOf(date), newTime);
 		List<EmployeeSchedule>schedules = employeeScheduleRepository.findByDay(day);
@@ -545,39 +548,67 @@ public class CiteService {
 	 * @param day
 	 * @return
 	 */
-	public List<User> checkWorkersAvailables(Cites cite, String day) {
+	public List<GetUserDTO> checkWorkersAvailables(Cites cite, String day) {
 	    List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
 	    List<User> availableWorkers = new ArrayList<User>();
 
-	    schedules.stream().forEach(schedule -> {
+	    for (EmployeeSchedule schedule : schedules) {
 	    	User worker = schedule.getWorker();
 	    	List<Cites>tempCites = new ArrayList<Cites>();
-	    	List<Cites>tempCitesDate = new ArrayList<Cites>();
 	    	
 	    	tempCites = citeRepository.findByDayAndWorkerAndStartTime(cite.getDay(), worker,  cite.getStartTime());
-	    	
-	    	if(tempCites.isEmpty()) {
-	    		tempCitesDate = citeRepository.findByDayAndStartTime(cite.getDay(), cite.getStartTime());
-	    	}
 	    	
 	    	List<Cites> tempCitesBetween = citeRepository.findCitesBetweenHours(
                 schedule.getWorker().getId(), cite.getDay(), cite.getStartTime(), cite.getEndTime()
             );
 	    	
-	    	if(tempCitesDate.size() >= schedules.size()) {
-	    		throw new ValueNotValidException("There are already appointments for this day");
-	    	}
 	    	 //Si el trabajador no tiene citas lo añadimos a la lista de trabajadores disponibles
 	    	if(tempCites.isEmpty() && tempCitesBetween.isEmpty()) {
 	    		availableWorkers.add(worker);
 	    	}
-	    });
+	    }
 	    
 	    if(availableWorkers.isEmpty()) {
 	    	throw new ValueNotValidException("Not available workers");
 	    }
 	    
-	    return availableWorkers;
+	    List<GetUserDTO>usersConverter =  ConvertToDTO.getUsersDTO(availableWorkers);
+	    
+	    return usersConverter;
+	}
+	
+	public List<GetUserDTO> getWorkersAvailablesById(String idString) {
+		Integer id = convertStringToInteger(idString);
+		
+		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found with this id"));
+		String day = LocalDate.parse(cite.getDay().toString()).getDayOfWeek().toString();
+	    
+		List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
+	    List<User> availableWorkers = new ArrayList<User>();
+
+	    for (EmployeeSchedule schedule : schedules) {
+	    	User worker = schedule.getWorker();
+	    	List<Cites>tempCites = new ArrayList<Cites>();
+	    	
+	    	tempCites = citeRepository.findByDayAndWorkerAndStartTime(cite.getDay(), worker,  cite.getStartTime());
+	    	
+	    	List<Cites> tempCitesBetween = citeRepository.findCitesBetweenHours(
+                schedule.getWorker().getId(), cite.getDay(), cite.getStartTime(), cite.getEndTime()
+            );
+	    	
+	    	 //Si el trabajador no tiene citas lo añadimos a la lista de trabajadores disponibles
+	    	if(tempCites.isEmpty() && tempCitesBetween.isEmpty()) {
+	    		availableWorkers.add(worker);
+	    	}
+	    }
+	    
+	    if(availableWorkers.isEmpty()) {
+	    	throw new ValueNotValidException("Not available workers");
+	    }
+	    
+	    List<GetUserDTO>usersConverter =  ConvertToDTO.getUsersDTO(availableWorkers);
+	    
+	    return usersConverter;
 	}
 	
 	/**

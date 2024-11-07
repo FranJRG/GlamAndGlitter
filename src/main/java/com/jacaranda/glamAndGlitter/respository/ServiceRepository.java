@@ -15,4 +15,5 @@ public interface ServiceRepository extends JpaRepository<Service, Integer>{
 	//Obtenemos servicios por su id y que esten activos
 	List<Service> findByIdAndActive(Integer id, Boolean active);
 	
+	
 }

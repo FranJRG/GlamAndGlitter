@@ -44,7 +44,7 @@ public class ConvertToDTO {
 	
 	public static List<GetPendingCiteDTO>getPendingCitesDTO(List<Cites>cites){
 		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),
-				cite.getService().getId(),cite.getUser().getName())).collect(Collectors.toList());
+				cite.getService().getId(),cite.getUser().getName(),cite.getEventId())).collect(Collectors.toList());
 	}
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
@@ -64,5 +65,18 @@ public class ServiceController {
 		List<ServiceDTO>services = serviceService.getServicesByCategory(idCategory);
 		return ResponseEntity.ok().body(services);
 	}
+	
+	@Operation(summary = "Desactivar un servicio, solo los administradores accederán aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@PutMapping("/disabledService/{id}")
+	public ResponseEntity<?>disabledService(@PathVariable String id){
+		ServiceDTO service = serviceService.disabledService(id);
+		return ResponseEntity.ok().body(service);
+	}
+	
+	
 	
 }

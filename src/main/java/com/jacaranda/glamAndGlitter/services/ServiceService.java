@@ -88,4 +88,30 @@ public class ServiceService {
 		return ConvertToDTO.getServicesDTO(serviceRepository.findByCategory(category));
 	}
 	
+	/**
+	 * Método para desactivar o activar un servicio
+	 */
+	public ServiceDTO disabledService(String idString) {
+		
+		Integer id;
+		
+		try {
+			id = Integer.valueOf(idString);
+		}catch(NumberFormatException e) {
+			throw new ValueNotValidException("Id must be numeric");
+		}
+		
+		Service service = serviceRepository.findById(id).orElseThrow(() 
+				-> new ElementNotFoundException("Service not found with this id"));
+		
+		service.setActive(!service.getActive());
+		
+		ServiceDTO serviceAux = new ServiceDTO(service.getId(),service.getName(),service.getDescription(),service.getPrice(),
+				service.getActive(),service.getCategory().getName(),service.getImageUrl(),service.getDuration());
+		
+		serviceRepository.save(service);
+		
+		return serviceAux;
+		
+	}
 }

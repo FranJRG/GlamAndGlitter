@@ -19,18 +19,21 @@ public class GetPendingCiteDTO {
 	private Integer idService;
 	
 	private String username;
+	
+	private String eventId;
 
 	public GetPendingCiteDTO() {
 		super();
 	}
 
-	public GetPendingCiteDTO(Integer id,Date day, Time startTime, Integer idService, String username) {
+	public GetPendingCiteDTO(Integer id,Date day, Time startTime, Integer idService, String username, String eventId) {
 		super();
 		this.id = id;
 		this.day = day;
 		this.startTime = startTime;
 		this.idService = idService;
 		this.username = username;
+		this.eventId = eventId;
 	}
 
 	public Integer getId() {
@@ -71,6 +74,14 @@ public class GetPendingCiteDTO {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	@Override

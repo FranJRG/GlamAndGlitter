@@ -38,7 +38,7 @@ public class CiteController {
 	})
 	@GetMapping("/workers/{id}")
 	public ResponseEntity<?>workers(@PathVariable String id){
-		List<GetUserDTO>users =  citeService.getWorkerByDate(id);
+		List<GetUserDTO>users =  citeService.getWorkersAvailablesById(id);
 		return ResponseEntity.ok().body(users);
 	}
 	
