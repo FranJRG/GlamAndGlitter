@@ -22,7 +22,7 @@ public class GlamAndGlitterApplication {
 		@Override
 		public void addCorsMappings(CorsRegistry registry) {
 			registry.addMapping("/**")
-				.allowedOrigins("http://localhost:4200","https://glam-and-glitter-frontend.vercel.app")
+				.allowedOrigins("http://localhost:4200","http://render.com","https://glam-and-glitter-frontend.vercel.app")
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
 				.allowedHeaders("*")
 				.allowCredentials(true);
