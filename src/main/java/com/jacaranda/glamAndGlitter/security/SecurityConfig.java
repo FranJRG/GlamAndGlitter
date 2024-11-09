@@ -64,13 +64,13 @@ public class SecurityConfig {
 			requests
 			.requestMatchers("/","/signin","/users","/checkEmail","/services","/randomServices", 
 					"/categories","/servicesByCategory/*","/services/*",
-					"/checkCite").permitAll()
+					"/checkCite","/ratings/*").permitAll()
 				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode",
 						"/changePassword").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/user/*","/myCites/*","/cite/*").authenticated()
-				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite").authenticated()
+				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite","/addRating").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
 				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule").hasAuthority("admin")
