@@ -34,9 +34,8 @@ public class Rating {
 		super();
 	}
 
-	public Rating(Integer id, Integer punctuation, String message, User user, Cites cites) {
+	public Rating(Integer punctuation, String message, User user, Cites cites) {
 		super();
-		this.id = id;
 		this.punctuation = punctuation;
 		this.message = message;
 		this.user = user;

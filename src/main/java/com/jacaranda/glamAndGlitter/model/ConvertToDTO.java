@@ -8,6 +8,7 @@ import com.jacaranda.glamAndGlitter.model.Dtos.CategoryDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.EmployeeScheduleDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.RatingDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 
 public class ConvertToDTO {
@@ -45,6 +46,10 @@ public class ConvertToDTO {
 	public static List<GetPendingCiteDTO>getPendingCitesDTO(List<Cites>cites){
 		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),
 				cite.getService().getId(),cite.getUser().getName(),cite.getEventId())).collect(Collectors.toList());
+	}
+	
+	public static List<RatingDTO>convertToRatingDTO(List<Rating>ratings){
+		return ratings.stream().map(rating -> new RatingDTO(rating.getPunctuation(),rating.getMessage())).collect(Collectors.toList());
 	}
 
 }
