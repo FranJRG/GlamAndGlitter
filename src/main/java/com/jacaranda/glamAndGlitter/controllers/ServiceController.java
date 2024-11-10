@@ -22,7 +22,7 @@ public class ServiceController {
 	@Autowired
 	private ServiceService serviceService;
 	
-	@Operation(summary = "Método para ver los servicios, cualquier usuario podrá acceder aqui")
+	@Operation(summary = "Método para ver los servicios, solo los administradores podran acceder aqui")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
@@ -30,6 +30,17 @@ public class ServiceController {
 	@GetMapping("/services")
 	public ResponseEntity<?> getServices(){
 		List<ServiceDTO>services = serviceService.getServices();
+		return ResponseEntity.ok().body(services);
+	}
+	
+	@Operation(summary = "Método para ver los servicios activos, cualquier usuario podrá acceder aqui")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/gridServices")
+	public ResponseEntity<?> getServicesActive(){
+		List<ServiceDTO>services = serviceService.getServicesActives();
 		return ResponseEntity.ok().body(services);
 	}
 	

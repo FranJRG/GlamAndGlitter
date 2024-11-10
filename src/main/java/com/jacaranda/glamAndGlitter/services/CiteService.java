@@ -133,7 +133,7 @@ public class CiteService {
 			throw new ValueNotValidException("No employee for this date and time");
 		}
 		
-		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), endTime);
+		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), citeDTO.getStartTime());
 		
 		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), worker, endTime,userLoggued, service, citeDTO.getEventId());
 		

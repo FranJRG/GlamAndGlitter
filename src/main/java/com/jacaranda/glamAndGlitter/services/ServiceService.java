@@ -33,6 +33,14 @@ public class ServiceService {
 	}
 	
 	/**
+	 * Método para obtener todos los servicios activos
+	 * @return
+	 */
+	public List<ServiceDTO> getServicesActives(){
+		return ConvertToDTO.getServicesDTO(serviceRepository.findAllByActive(true));
+	}
+	
+	/**
 	 * Método para obtener servicios por su id y que esten activos
 	 * @param idString
 	 * @return
@@ -85,7 +93,7 @@ public class ServiceService {
 		
 		Category category = categoryRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Category not found with id " + id));
 		
-		return ConvertToDTO.getServicesDTO(serviceRepository.findByCategory(category));
+		return ConvertToDTO.getServicesDTO(serviceRepository.findByCategoryAndActive(category,true));
 	}
 	
 	/**
