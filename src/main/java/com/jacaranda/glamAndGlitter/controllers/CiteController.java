@@ -31,7 +31,7 @@ public class CiteController {
 	@Autowired
 	private CiteService citeService;
 	
-	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener los trabajadores disponibles, solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
@@ -64,7 +64,7 @@ public class CiteController {
 		return ResponseEntity.ok().body(cites);
 	}
 	
-	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener las citas de un usuario, los usuarios logueados podrán ver solo sus citas")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")

@@ -584,9 +584,16 @@ public class CiteService {
 		String day = LocalDate.parse(cite.getDay().toString()).getDayOfWeek().toString();
 	    
 		List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
+		List<EmployeeSchedule> availableSchedules = new ArrayList<EmployeeSchedule>();
 	    List<User> availableWorkers = new ArrayList<User>();
+	    
+		if(cite.getStartTime().after(Time.valueOf("09:00:00")) && cite.getStartTime().before(Time.valueOf("13:00:00"))) {
+			availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Morning")).collect(Collectors.toList());
+		}else if(cite.getStartTime().after(Time.valueOf("13:01:00")) && cite.getStartTime().before(Time.valueOf("21:00:00"))) {
+			availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Afternoon")).collect(Collectors.toList());
+		}
 
-	    for (EmployeeSchedule schedule : schedules) {
+	    for (EmployeeSchedule schedule : availableSchedules) {
 	    	User worker = schedule.getWorker();
 	    	List<Cites>tempCites = new ArrayList<Cites>();
 	    	
