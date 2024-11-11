@@ -32,7 +32,18 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@Operation(summary = "Endpoint para comprobar si existe un usuario por un email, cualquier usuario podrá acceder")
+	@Operation(summary = "Endpoint para obtener la lista de los trabajadores, solo los administradores podrán ver esta lista")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/allWorkers")
+	public ResponseEntity<?> getWorkers(){
+		List<GetUserDTO> user = userService.getWorkers();
+		return ResponseEntity.ok().body(user);
+	}
+	
+	@Operation(summary = "Endpoint para otbener un usuario por su id, cualquier usuario podrá acceder")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")

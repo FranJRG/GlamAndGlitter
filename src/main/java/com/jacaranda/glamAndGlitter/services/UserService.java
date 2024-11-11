@@ -50,8 +50,19 @@ public class UserService implements UserDetailsService{
 		return ConvertToDTO.getUsersDTO(userRepository.findAll());
 	}
 	
+	/**
+	 * Método para obtener los trabajadores sin horario
+	 * @return
+	 */
 	public List<GetUserDTO>findWorkerWithoutSchedule(){
 		return ConvertToDTO.getUsersDTO(userRepository.findByRoleAndEmployeeSchedulesNull("stylist"));
+	}
+	
+	/**
+	 * Método para obtener todos los trabajadores
+	 */
+	public List<GetUserDTO>getWorkers(){
+		return ConvertToDTO.getUsersDTO(userRepository.findByRole("stylist"));
 	}
 	
 	/**

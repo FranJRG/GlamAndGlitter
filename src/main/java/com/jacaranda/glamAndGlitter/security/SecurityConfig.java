@@ -73,9 +73,10 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite","/addRating").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule","/services").hasAuthority("admin")
+				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule",
+						"/services","/userSchedule/*","/allWorkers").hasAuthority("admin")
 				.requestMatchers(HttpMethod.POST, "/setWorker","/setSchedule/*").hasAuthority("admin")
-				.requestMatchers(HttpMethod.PUT, "/disabledService/*").hasAuthority("admin")
+				.requestMatchers(HttpMethod.PUT, "/disabledService/*","/updateSchedule/*").hasAuthority("admin")
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())

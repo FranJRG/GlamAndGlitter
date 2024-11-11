@@ -26,7 +26,7 @@ public class ConvertToDTO {
 
 	public static List<EmployeeScheduleDTO>getEmployeeScheduleDTO(List<EmployeeSchedule>employeeSchedule){
 		return employeeSchedule.stream().map(schedule -> 
-									new EmployeeScheduleDTO(schedule.getTurn(),schedule.getDay())).collect(Collectors.toList());
+									new EmployeeScheduleDTO(schedule.getId(),schedule.getTurn(),schedule.getDay())).collect(Collectors.toList());
 	}
 	
 	public static List<ServiceDTO>getServicesDTO(List<Service>services){
