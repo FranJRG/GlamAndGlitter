@@ -44,12 +44,12 @@ public class ConvertToDTO {
 	}
 	
 	public static List<GetPendingCiteDTO>getPendingCitesDTO(List<Cites>cites){
-		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),
-				cite.getService().getId(),cite.getUser().getName(),cite.getEventId())).collect(Collectors.toList());
+		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),
+				cite.getUser().getName(),cite.getEventId(),cite.getWorker().getId())).collect(Collectors.toList());
 	}
 	
 	public static List<RatingDTO>convertToRatingDTO(List<Rating>ratings){
-		return ratings.stream().map(rating -> new RatingDTO(rating.getPunctuation(),rating.getMessage())).collect(Collectors.toList());
+		return ratings.stream().map(rating -> new RatingDTO(rating.getPunctuation(),rating.getMessage(),rating.getUser().getName())).collect(Collectors.toList());
 	}
 
 }

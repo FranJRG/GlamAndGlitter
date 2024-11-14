@@ -7,15 +7,18 @@ public class RatingDTO {
 	private Integer punctuation;
 	
 	private String message;
+	
+	private String username;
 
 	public RatingDTO() {
 		super();
 	}
 
-	public RatingDTO(Integer punctuation, String message) {
+	public RatingDTO(Integer punctuation, String message, String username) {
 		super();
 		this.punctuation = punctuation;
 		this.message = message;
+		this.username = username;
 	}
 
 	public Integer getPunctuation() {
@@ -32,6 +35,14 @@ public class RatingDTO {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	@Override
