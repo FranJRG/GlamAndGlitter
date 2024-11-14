@@ -8,6 +8,7 @@ import com.jacaranda.glamAndGlitter.model.Dtos.CategoryDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.EmployeeScheduleDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.RatingDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
 
 public class ConvertToDTO {
@@ -25,7 +26,7 @@ public class ConvertToDTO {
 
 	public static List<EmployeeScheduleDTO>getEmployeeScheduleDTO(List<EmployeeSchedule>employeeSchedule){
 		return employeeSchedule.stream().map(schedule -> 
-									new EmployeeScheduleDTO(schedule.getTurn(),schedule.getDay())).collect(Collectors.toList());
+									new EmployeeScheduleDTO(schedule.getId(),schedule.getTurn(),schedule.getDay())).collect(Collectors.toList());
 	}
 	
 	public static List<ServiceDTO>getServicesDTO(List<Service>services){
@@ -43,8 +44,12 @@ public class ConvertToDTO {
 	}
 	
 	public static List<GetPendingCiteDTO>getPendingCitesDTO(List<Cites>cites){
-		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),
-				cite.getService().getId(),cite.getUser().getName(),cite.getEventId())).collect(Collectors.toList());
+		return cites.stream().map(cite -> new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),
+				cite.getUser().getName(),cite.getEventId(),cite.getWorker().getId())).collect(Collectors.toList());
+	}
+	
+	public static List<RatingDTO>convertToRatingDTO(List<Rating>ratings){
+		return ratings.stream().map(rating -> new RatingDTO(rating.getPunctuation(),rating.getMessage(),rating.getUser().getName())).collect(Collectors.toList());
 	}
 
 }

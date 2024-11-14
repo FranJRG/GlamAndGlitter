@@ -17,6 +17,9 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	//Obtenemos un usuario por su rol
 	List<User> findByRoleIn(List<String> roles);
 	
+	//Obtenemos usuario por un rol
+	List<User> findByRole(String role);
+	
 	//Obtenemos usuarios por su rol
 	List<User> findByRoleAndEmployeeSchedulesNull(String role);
 	

@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class EmployeeScheduleDTO {
 	
+	private Integer id;
+	
 	private String turn;
 	
 	private String day;
@@ -12,10 +14,19 @@ public class EmployeeScheduleDTO {
 		super();
 	}
 
-	public EmployeeScheduleDTO(String day,String turn) {
+	public EmployeeScheduleDTO(Integer id,String turn,String day) {
 		super();
+		this.id = id;
 		this.day = day;
 		this.turn = turn;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getTurn() {

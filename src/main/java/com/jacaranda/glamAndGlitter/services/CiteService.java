@@ -73,7 +73,8 @@ public class CiteService {
 	public GetPendingCiteDTO getCite(String idString) {
 		Integer id = convertStringToInteger(idString);
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found"));
-		GetPendingCiteDTO citeDTO = new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),cite.getUser().getName(),cite.getEventId());
+		GetPendingCiteDTO citeDTO = new GetPendingCiteDTO(cite.getId(),cite.getDay(),cite.getStartTime(),cite.getService().getId(),
+				cite.getUser().getName(),cite.getEventId(),cite.getWorker().getId());
 		return citeDTO;
 	}
 	
@@ -133,7 +134,7 @@ public class CiteService {
 			throw new ValueNotValidException("No employee for this date and time");
 		}
 		
-		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), endTime);
+		User worker = setAutomaticallyWorkerToCite(citeDTO.getDay(), citeDTO.getStartTime());
 		
 		Cites cite = new Cites(citeDTO.getDay(),citeDTO.getStartTime(), worker, endTime,userLoggued, service, citeDTO.getEventId());
 		
@@ -249,7 +250,8 @@ public class CiteService {
 	 * @param newCiteDTO
 	 * @return
 	 */
-	public BookCiteDTO updateCite(String idCite,BookCiteDTO newCiteDTO) {
+	public BookCiteDTO updateCite(String idCite,BookCiteDTO newCiteDTO,
+			String idWorker) {
 		
 		Integer id = convertStringToInteger(idCite);
 		
@@ -259,6 +261,34 @@ public class CiteService {
 		User userLoggued = loginApp();
 		
 		if((userLoggued.getRole().equals("admin")) || userLoggued.getId().equals(cite.getUser().getId())) {
+			
+			if(idWorker != null && !idWorker.isEmpty()) {
+				
+				Integer idWorkerInt = convertStringToInteger(idWorker);
+				
+				User worker = userRepository.findById(idWorkerInt).orElseThrow(() -> new ElementNotFoundException("Worker not found with this id"));
+				
+				if(!worker.getRole().equals("stylist")) {
+					throw new ValueNotValidException("This user is not a worker");
+				}
+				
+				checkCiteAvailability(cite, worker);
+				cite.setWorker(worker);
+				
+			}
+			
+			if((idWorker == null || idWorker.isEmpty()) && (!newCiteDTO.getDay().equals(cite.getDay()) || !newCiteDTO.getStartTime().equals(cite.getStartTime()))) {
+				User worker = setAutomaticallyWorkerToCite(newCiteDTO.getDay(), newCiteDTO.getStartTime());				
+				checkCiteAvailability(cite, worker);
+				cite.setWorker(worker);
+			}
+			
+			if(newCiteDTO.getDay() != null || newCiteDTO.getStartTime() != null) {
+				
+				EmployeeSchedule schedule = findEmployeeSchedule(newCiteDTO.getDay(),cite.getWorker());
+				checkTime(cite.getStartTime(),schedule);
+				
+			}
 			
 			if(newCiteDTO.getDay() != null) {
 				
@@ -282,18 +312,6 @@ public class CiteService {
 				
 			}
 			
-			if(newCiteDTO.getDay() != null || newCiteDTO.getStartTime() != null) {
-				
-				EmployeeSchedule schedule = findEmployeeSchedule(cite.getDay(),cite.getWorker());
-				checkTime(cite.getStartTime(),schedule);
-				
-			}
-			
-			if(!newCiteDTO.getDay().equals(cite.getDay()) && !newCiteDTO.getStartTime().equals(cite.getStartTime())) {
-				User worker = setAutomaticallyWorkerToCite(newCiteDTO.getDay(), newCiteDTO.getStartTime());				
-				cite.setWorker(worker);
-				checkCiteAvailability(cite, cite.getWorker());
-			}
 			citeRepository.save(cite);
 		}else {
 			throw new RoleNotValidException("Only admins can update cites of other users");
@@ -381,7 +399,7 @@ public class CiteService {
 		}
 		
         List<Cites> citesAux = citeRepository.findCitesBetweenHours(
-                cite.getWorker().getId(), cite.getDay(),cite.getStartTime(), cite.getEndTime());
+                worker.getId(), cite.getDay(),cite.getStartTime(), cite.getEndTime());
 		
         if(!citesAux.isEmpty()) {
         	throw new ValueNotValidException("At that time the worker will be busy with another appointment, please choose from this time: " + citesAux.get(0).getEndTime());
@@ -577,16 +595,39 @@ public class CiteService {
 	    return usersConverter;
 	}
 	
-	public List<GetUserDTO> getWorkersAvailablesById(String idString) {
+	public List<GetUserDTO> getWorkersAvailablesById(String idString, String dateFilter, String timeFilter) {
 		Integer id = convertStringToInteger(idString);
-		
+		String day = "";
 		Cites cite = citeRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Cite not found with this id"));
-		String day = LocalDate.parse(cite.getDay().toString()).getDayOfWeek().toString();
-	    
-		List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
+		
+		if(dateFilter != null && !dateFilter.equals("undefined")) {
+			day = LocalDate.parse(dateFilter).getDayOfWeek().toString();			
+		}else {
+			day = LocalDate.parse(cite.getDay().toString()).getDayOfWeek().toString();	
+		}
+	    List<EmployeeSchedule> schedules = employeeScheduleRepository.findByDay(day);
+	    List<EmployeeSchedule> availableSchedules = new ArrayList<EmployeeSchedule>();
 	    List<User> availableWorkers = new ArrayList<User>();
+	    
+	    if(timeFilter != null  && !timeFilter.equals("undefined")) {
+	    	Time timeFilterConvert = Time.valueOf(timeFilter);
+	    	if(timeFilterConvert.after(Time.valueOf("09:00:00")) && timeFilterConvert.before(Time.valueOf("13:00:00"))) {
+	    		availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Morning")).collect(Collectors.toList());
+	    	}else if(timeFilterConvert.after(Time.valueOf("13:01:00")) && timeFilterConvert.before(Time.valueOf("21:00:00"))) {
+	    		availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Afternoon")).collect(Collectors.toList());
+	    	}
+	    	
+	    }else {
+	    	
+	    	if(cite.getStartTime().after(Time.valueOf("09:00:00")) && cite.getStartTime().before(Time.valueOf("13:00:00"))) {
+	    		availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Morning")).collect(Collectors.toList());
+	    	}else if(cite.getStartTime().after(Time.valueOf("13:01:00")) && cite.getStartTime().before(Time.valueOf("21:00:00"))) {
+	    		availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Afternoon")).collect(Collectors.toList());
+	    	}
+	    	
+	    }
 
-	    for (EmployeeSchedule schedule : schedules) {
+	    for (EmployeeSchedule schedule : availableSchedules) {
 	    	User worker = schedule.getWorker();
 	    	List<Cites>tempCites = new ArrayList<Cites>();
 	    	

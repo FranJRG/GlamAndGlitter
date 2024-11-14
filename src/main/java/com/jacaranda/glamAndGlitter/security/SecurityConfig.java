@@ -62,20 +62,21 @@ public class SecurityConfig {
 	        .exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
 	        .authorizeHttpRequests((requests) -> {
 			requests
-			.requestMatchers("/","/signin","/users","/checkEmail","/services","/randomServices", 
+			.requestMatchers("/","/signin","/users","/checkEmail","/randomServices", 
 					"/categories","/servicesByCategory/*","/services/*",
-					"/checkCite").permitAll()
+					"/checkCite","/ratings/*","/gridServices").permitAll()
 				.requestMatchers(HttpMethod.POST,"/forgotPassword","/verifyCode",
 						"/changePassword").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/user/*","/myCites/*","/cite/*").authenticated()
-				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite").authenticated()
+				.requestMatchers(HttpMethod.POST,"/activateNotifications","/addCite","/addRating").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
-				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule").hasAuthority("admin")
+				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule",
+						"/services","/userSchedule/*","/allWorkers").hasAuthority("admin")
 				.requestMatchers(HttpMethod.POST, "/setWorker","/setSchedule/*").hasAuthority("admin")
-				.requestMatchers(HttpMethod.PUT, "/disabledService/*").hasAuthority("admin")
+				.requestMatchers(HttpMethod.PUT, "/disabledService/*","/updateSchedule/*").hasAuthority("admin")
 				.anyRequest().denyAll();
 	        })
 	        .formLogin((form) -> form.permitAll())

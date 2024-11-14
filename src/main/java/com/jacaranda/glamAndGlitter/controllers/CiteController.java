@@ -3,6 +3,7 @@ package com.jacaranda.glamAndGlitter.controllers;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,16 @@ public class CiteController {
 	@Autowired
 	private CiteService citeService;
 	
-	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener los trabajadores disponibles, solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@GetMapping("/workers/{id}")
-	public ResponseEntity<?>workers(@PathVariable String id){
-		List<GetUserDTO>users =  citeService.getWorkersAvailablesById(id);
+	public ResponseEntity<?>workers(@PathVariable String id, 
+			@RequestParam Optional<String> dateFilter, 
+			@RequestParam Optional<String> timeFilter){
+		List<GetUserDTO>users =  citeService.getWorkersAvailablesById(id,dateFilter.orElse(null),timeFilter.orElse(null));
 		return ResponseEntity.ok().body(users);
 	}
 	
@@ -64,7 +67,7 @@ public class CiteController {
 		return ResponseEntity.ok().body(cites);
 	}
 	
-	@Operation(summary = "Método para obtener las citas pendientes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener las citas de un usuario, los usuarios logueados podrán ver solo sus citas")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
@@ -116,8 +119,9 @@ public class CiteController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PutMapping("/modifyCite/{id}")
-	public ResponseEntity<?>modifyCite(@PathVariable String id, @RequestBody BookCiteDTO citeDTO){
-		BookCiteDTO newCiteDTO = citeService.updateCite(id, citeDTO);
+	public ResponseEntity<?>modifyCite(@PathVariable String id, @RequestBody BookCiteDTO citeDTO, 
+			@RequestParam Optional<String>idWorker){
+		BookCiteDTO newCiteDTO = citeService.updateCite(id, citeDTO, idWorker.orElse(""));
 		return ResponseEntity.ok().body(newCiteDTO);
 	}
 	
