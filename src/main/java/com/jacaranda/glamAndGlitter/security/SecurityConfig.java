@@ -74,7 +74,8 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.PUT, "/modifyCite/*").authenticated()
 				.requestMatchers(HttpMethod.DELETE,"/cancelCite/*").authenticated()
 				.requestMatchers(HttpMethod.GET, "/cites", "/workers/*","/userWithoutSchedule",
-						"/services","/userSchedule/*","/allWorkers").hasAuthority("admin")
+						"/services","/userSchedule/*","/allWorkers","/lastCites","/punctuationLastMonth",
+						"/punctuation","/worstPunctuation","/bestPunctuation","/servicesSummary").hasAuthority("admin")
 				.requestMatchers(HttpMethod.POST, "/setWorker","/setSchedule/*").hasAuthority("admin")
 				.requestMatchers(HttpMethod.PUT, "/disabledService/*","/updateSchedule/*").hasAuthority("admin")
 				.anyRequest().denyAll();

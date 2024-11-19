@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jacaranda.glamAndGlitter.model.Dtos.ServiceDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.ServiceSummary;
 import com.jacaranda.glamAndGlitter.services.ServiceService;
+import com.jacaranda.glamAndGlitter.services.ServiceSummarService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +23,20 @@ public class ServiceController {
 
 	@Autowired
 	private ServiceService serviceService;
+	
+	@Autowired
+	private ServiceSummarService serviceSumService;
+	
+	@Operation(summary = "Método para obtener un reporte sobre los servicios mas usados, solo los administradores podran acceder aqui")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/servicesSummary")
+	public ResponseEntity<?> getServicesWithRating(){
+		List<ServiceSummary>services = serviceSumService.getTopServicesWithRatings();
+		return ResponseEntity.ok().body(services);
+	}
 	
 	@Operation(summary = "Método para ver los servicios, solo los administradores podran acceder aqui")
 	@ApiResponses(value = {
