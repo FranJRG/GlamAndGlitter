@@ -90,10 +90,6 @@ public class CiteService {
 		User user = userRepository.findById(id).orElseThrow(() -> 
 			new ElementNotFoundException("User not found"));
 		
-		if(!user.getRole().equals("user")) {
-			throw new ValueNotValidException("User must be user for this action");
-		}
-		
 		return ConvertToDTO.getPendingCitesDTO(citeRepository.findByUser(user));
 	}
 	

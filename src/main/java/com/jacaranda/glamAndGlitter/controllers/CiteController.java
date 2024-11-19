@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.SummaryCites;
 import com.jacaranda.glamAndGlitter.services.CiteService;
+import com.jacaranda.glamAndGlitter.services.ServiceSummarService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,6 +33,20 @@ public class CiteController {
 
 	@Autowired
 	private CiteService citeService;
+	
+	@Autowired
+	private ServiceSummarService summaryService;
+	
+	@Operation(summary = "Método para obtener las citas del último mes, solo los administradores accederán aquí")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "Bad request"),
+			@ApiResponse(responseCode = "200", description = "Complete!")
+	})
+	@GetMapping("/lastCites")
+	public ResponseEntity<?>getLastMonthCites(){
+		List<SummaryCites>cites =  summaryService.getCitesInLastMonth();
+		return ResponseEntity.ok().body(cites);
+	}
 	
 	@Operation(summary = "Método para obtener los trabajadores disponibles, solo los administradores accederán aquí")
 	@ApiResponses(value = {

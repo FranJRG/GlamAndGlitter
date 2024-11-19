@@ -50,7 +50,21 @@ public interface CiteRepository extends JpaRepository<Cites, Integer>{
 	                                     @Param("currentTime") LocalTime currentTime, 
 	                                     @Param("oneHourLater") LocalTime oneHourLater);
 
-
+	
+	@Query("SELECT s.id, s.name, COUNT(c) AS reservationCount " +
+		       "FROM Cites c " +
+		       "JOIN c.service s " +
+		       "WHERE c.day >= :lastMonth " +
+		       "AND c.day < :today " +
+		       "GROUP BY s.id, s.name " +
+		       "ORDER BY reservationCount DESC")
+	List<Object[]> findTopServicesByReservationCount(@Param("lastMonth") Date lastMonth, @Param("today") Date today);
+	
+	@Query("SELECT c " +
+		       "FROM Cites c " +
+		       "WHERE c.day >= :lastMonth " +
+		       "AND c.day < :today")
+	List<Cites> findCitesInLastMonth(@Param("lastMonth") Date lastMonth,@Param("today") Date today);
 
 
 	
