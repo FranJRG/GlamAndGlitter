@@ -168,7 +168,7 @@ public class CiteService {
 			throw new ValueNotValidException("Worker not found");
 		}
 		
-		EmployeeSchedule schedule = findEmployeeSchedule(cite.getDay(),worker);
+		EmployeeSchedule schedule = findEmployeeSchedule(cite.getDay(),worker,cite.getStartTime());
 		
 		checkTime(cite.getStartTime(),schedule);
         
@@ -281,7 +281,7 @@ public class CiteService {
 			
 			if(newCiteDTO.getDay() != null || newCiteDTO.getStartTime() != null) {
 				
-				EmployeeSchedule schedule = findEmployeeSchedule(newCiteDTO.getDay(),cite.getWorker());
+				EmployeeSchedule schedule = findEmployeeSchedule(newCiteDTO.getDay(),cite.getWorker(),newCiteDTO.getStartTime());
 				checkTime(cite.getStartTime(),schedule);
 				
 			}
@@ -367,14 +367,27 @@ public class CiteService {
 	 * @param worker
 	 * @return
 	 */
-	public EmployeeSchedule findEmployeeSchedule(Date date,User worker) {
+	public EmployeeSchedule findEmployeeSchedule(Date date,User worker,Time startTime) {
 		
 		String day = LocalDate.parse(date.toString()).getDayOfWeek().toString();
 		
 		List<EmployeeSchedule> schedules = employeeScheduleRepository.findByWorkerAndDay(worker, day);
 		
-		if(!schedules.isEmpty()) {
+		List<EmployeeSchedule> availableSchedules = new ArrayList<EmployeeSchedule>();
+		
+		if(schedules.size() > 1) {
+			if(startTime.after(Time.valueOf("09:00:00")) && startTime.before(Time.valueOf("13:00:00"))) {
+				availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Morning")).collect(Collectors.toList());
+			}else if(startTime.after(Time.valueOf("13:01:00")) && startTime.before(Time.valueOf("21:00:00"))) {
+				availableSchedules = schedules.stream().filter(schedule -> schedule.getTurn().equals("Afternoon")).collect(Collectors.toList());
+			}
+		}
+		
+		
+		if(!schedules.isEmpty() && availableSchedules.isEmpty()) {
 			return schedules.get(0);
+		}else if(!schedules.isEmpty() && !availableSchedules.isEmpty()) {
+			return availableSchedules.get(0);
 		}else {
 			throw new ElementNotFoundException("This worker not work this day");
 		}
