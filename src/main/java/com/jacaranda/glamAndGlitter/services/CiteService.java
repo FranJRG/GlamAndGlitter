@@ -66,7 +66,7 @@ public class CiteService {
 	}
 	
 	/**
-	 * Método para obtener citas de un usuario
+	 * Método para obtener citas
 	 * @param idString
 	 * @return
 	 */

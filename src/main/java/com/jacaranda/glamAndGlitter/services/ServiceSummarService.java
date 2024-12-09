@@ -27,11 +27,18 @@ public class ServiceSummarService {
 	@Autowired
 	private RatingRepository ratingRepository;
 	
+	/**
+	 * Método para obtener los servicios y sus valoraciones 
+	 * Convertimos la lista de objeto que retornamos en un ServiceSummary
+	 * Ordenamos por aquellas que tengan mayor porcentaje de peticiones
+	 * La lista máxima que devolveremos será de 4
+	 * @return
+	 */
 	public List<ServiceSummary> getTopServicesWithRatings() {
-		LocalDate startOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate startOfCurrentMonth = LocalDate.now().withDayOfMonth(1);
-	    Date startDate = Date.valueOf(startOfLastMonth);
-	    Date endDate = Date.valueOf(startOfCurrentMonth);
+	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    Date startDate = Date.valueOf(startOfMonth);
+	    Date endDate = Date.valueOf(endOfMonth);
         List<Object[]> results = citeRepository.findTopServicesByReservationCount(startDate,endDate);
 
         List<ServiceSummary> reportList = new ArrayList<ServiceSummary>();
@@ -52,11 +59,15 @@ public class ServiceSummarService {
         return reportList;
     }
 	
+	/**
+	 * Obtenos las citas del último mes, con su valoraciones y el usuario que las escribió
+	 * @return
+	 */
 	public List<SummaryCites>getCitesInLastMonth(){
-		LocalDate startOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate startOfCurrentMonth = LocalDate.now().withDayOfMonth(1);
-	    Date startDate = Date.valueOf(startOfLastMonth);
-	    Date endDate = Date.valueOf(startOfCurrentMonth);
+	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    Date startDate = Date.valueOf(startOfMonth);
+	    Date endDate = Date.valueOf(endOfMonth);
 		List<Cites>cites = citeRepository.findCitesInLastMonth(startDate,endDate);
 		
 		List<SummaryCites>summaryCites = new ArrayList<SummaryCites>();
@@ -78,35 +89,53 @@ public class ServiceSummarService {
 		return summaryCites;
 	}
 	
+	/**
+	 * Método para obtener las valoracion media del último mes 
+	 *(Si estamos en noviembre el último será desde el 1 de oct hasta el 31 de oct)
+	 * Devolvemos la valoración de ese último mes
+	 * @return
+	 */
 	public AverageMedia getRatingMediaLastMonth() {
-		LocalDate startOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate startOfCurrentMonth = LocalDate.now().withDayOfMonth(1);
-	    Date startDate = Date.valueOf(startOfLastMonth);
-	    Date endDate = Date.valueOf(startOfCurrentMonth);
+	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    Date startDate = Date.valueOf(startOfMonth);
+	    Date endDate = Date.valueOf(endOfMonth);
 	    Double averageMedia = ratingRepository.getAverageRatingFromCitasInLastMonth(startDate, endDate);
 	    return new AverageMedia(averageMedia);
 	}
 	
+	/**
+	 * Método para devolver la valoración media en total de la compañia
+	 * @return
+	 */
 	public AverageMedia getTotalMedia() {
 		Double averageMedia = ratingRepository.getAverageFromCompany();
 		AverageMedia media = new AverageMedia(averageMedia);
 		return media;
 	}
 	
+	/**
+	 * Método para devolver las peores calificaciones del último mes
+	 * @return
+	 */
 	public List<RatingDTO> getRatingLess() {
-		LocalDate startOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate startOfCurrentMonth = LocalDate.now().withDayOfMonth(1);
-	    Date startDate = Date.valueOf(startOfLastMonth);
-	    Date endDate = Date.valueOf(startOfCurrentMonth);
+	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    Date startDate = Date.valueOf(startOfMonth);
+	    Date endDate = Date.valueOf(endOfMonth);
 		List<RatingDTO>ratings = ConvertToDTO.convertToRatingDTO(ratingRepository.getRatingLessThanThree(startDate,endDate));
 		return ratings.stream().limit(5).collect(Collectors.toList());
 	}
 	
+	/**
+	 * Método para devolver las mejores valoraciones del último mes
+	 * @return
+	 */
 	public List<RatingDTO> getRatingGreater() {
-		LocalDate startOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate startOfCurrentMonth = LocalDate.now().withDayOfMonth(1);
-	    Date startDate = Date.valueOf(startOfLastMonth);
-	    Date endDate = Date.valueOf(startOfCurrentMonth);
+	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    Date startDate = Date.valueOf(startOfMonth);
+	    Date endDate = Date.valueOf(endOfMonth);
 		List<RatingDTO>ratings = ConvertToDTO.convertToRatingDTO(ratingRepository.getRatingGreaterThanOrEqualThree(startDate,endDate));
 		return ratings.stream().limit(5).collect(Collectors.toList());
 	}
