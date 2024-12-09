@@ -35,8 +35,8 @@ public class ServiceSummarService {
 	 * @return
 	 */
 	public List<ServiceSummary> getTopServicesWithRatings() {
-	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+		LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(startOfMonth.lengthOfMonth());
 	    Date startDate = Date.valueOf(startOfMonth);
 	    Date endDate = Date.valueOf(endOfMonth);
         List<Object[]> results = citeRepository.findTopServicesByReservationCount(startDate,endDate);
@@ -64,8 +64,8 @@ public class ServiceSummarService {
 	 * @return
 	 */
 	public List<SummaryCites>getCitesInLastMonth(){
-	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+		LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(startOfMonth.lengthOfMonth());
 	    Date startDate = Date.valueOf(startOfMonth);
 	    Date endDate = Date.valueOf(endOfMonth);
 		List<Cites>cites = citeRepository.findCitesInLastMonth(startDate,endDate);
@@ -97,7 +97,7 @@ public class ServiceSummarService {
 	 */
 	public AverageMedia getRatingMediaLastMonth() {
 	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(startOfMonth.lengthOfMonth());
 	    Date startDate = Date.valueOf(startOfMonth);
 	    Date endDate = Date.valueOf(endOfMonth);
 	    Double averageMedia = ratingRepository.getAverageRatingFromCitasInLastMonth(startDate, endDate);
@@ -119,8 +119,8 @@ public class ServiceSummarService {
 	 * @return
 	 */
 	public List<RatingDTO> getRatingLess() {
-	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+		LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(startOfMonth.lengthOfMonth());
 	    Date startDate = Date.valueOf(startOfMonth);
 	    Date endDate = Date.valueOf(endOfMonth);
 		List<RatingDTO>ratings = ConvertToDTO.convertToRatingDTO(ratingRepository.getRatingLessThanThree(startDate,endDate));
@@ -132,8 +132,8 @@ public class ServiceSummarService {
 	 * @return
 	 */
 	public List<RatingDTO> getRatingGreater() {
-	    LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(31);
+		LocalDate startOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+	    LocalDate endOfMonth = LocalDate.now().minusMonths(1).withDayOfMonth(startOfMonth.lengthOfMonth());
 	    Date startDate = Date.valueOf(startOfMonth);
 	    Date endDate = Date.valueOf(endOfMonth);
 		List<RatingDTO>ratings = ConvertToDTO.convertToRatingDTO(ratingRepository.getRatingGreaterThanOrEqualThree(startDate,endDate));
