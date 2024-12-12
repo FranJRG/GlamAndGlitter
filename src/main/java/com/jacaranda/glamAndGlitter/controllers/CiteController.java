@@ -20,10 +20,12 @@ import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.SummaryCites;
+import com.jacaranda.glamAndGlitter.model.Dtos.UpdateCiteDTO;
 import com.jacaranda.glamAndGlitter.services.CiteService;
 import com.jacaranda.glamAndGlitter.services.ServiceSummarService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
@@ -100,7 +102,7 @@ public class CiteController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@GetMapping("/checkCite")
-	public ResponseEntity<?>checkCite(@RequestParam LocalDate date,@RequestParam String time, @RequestParam String endTime){
+	public ResponseEntity<?>checkCite(@Parameter(description = "Formato válido yyyy-MM-dd")@RequestParam LocalDate date, @Parameter(description = "Formato válido HH:mm:ss") @RequestParam String time,@Parameter(description = "Formato válido HH:mm:ss") @RequestParam String endTime){
 		List<BookCiteDTO>cites =  citeService.findByDateAndTime(date,time, endTime);
 		return ResponseEntity.ok().body(cites);
 	}
@@ -116,17 +118,6 @@ public class CiteController {
 		return ResponseEntity.ok().body(citeDTO);
 	}
 	
-	@Operation(summary = "Método para setear un empleado a una cita, podrás establecerlo automáticamente por la aplicación, solo los usuarios administradores podrán acceder aquí")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "400", description = "Bad request"),
-			@ApiResponse(responseCode = "200", description = "Complete!")
-	})
-	@PostMapping("/setWorker")
-	public ResponseEntity<?>setWorkerToCite(@RequestParam String idCite, @RequestParam String idWorker){
-		GetUserDTO worker = citeService.setWorker(idCite, idWorker);
-		return ResponseEntity.ok().body(worker);
-	}
-	
 	@Operation(summary = "Método para modificar una cita existente, solo los usuarios logueados que sea suya la cita "
 			+ "y los administradores podrán acceder aquí")
 	@ApiResponses(value = {
@@ -135,9 +126,9 @@ public class CiteController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PutMapping("/modifyCite/{id}")
-	public ResponseEntity<?>modifyCite(@PathVariable String id, @RequestBody BookCiteDTO citeDTO, 
+	public ResponseEntity<?>modifyCite(@PathVariable String id, @RequestBody UpdateCiteDTO citeDTO, 
 			@RequestParam Optional<String>idWorker){
-		BookCiteDTO newCiteDTO = citeService.updateCite(id, citeDTO, idWorker.orElse(""));
+		UpdateCiteDTO newCiteDTO = citeService.updateCite(id, citeDTO, idWorker.orElse(""));
 		return ResponseEntity.ok().body(newCiteDTO);
 	}
 	

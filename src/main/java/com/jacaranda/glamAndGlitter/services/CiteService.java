@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import com.jacaranda.glamAndGlitter.model.User;
 import com.jacaranda.glamAndGlitter.model.Dtos.BookCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetPendingCiteDTO;
 import com.jacaranda.glamAndGlitter.model.Dtos.GetUserDTO;
+import com.jacaranda.glamAndGlitter.model.Dtos.UpdateCiteDTO;
 import com.jacaranda.glamAndGlitter.respository.CiteRepository;
 import com.jacaranda.glamAndGlitter.respository.EmployeeScheduleRepository;
 import com.jacaranda.glamAndGlitter.respository.ServiceRepository;
@@ -115,6 +117,11 @@ public class CiteService {
 			throw new ValueNotValidException("Time can't be null");
 		}
 		
+		if(citeDTO.getEventId() == null || citeDTO.getEventId().isEmpty() || citeDTO.getEventId().equals("string")) {
+			String eventId = generateGoogleCalendarId(32);
+			citeDTO.setEventId(eventId);
+		}
+		
 		isValidDateAndTime(citeDTO.getDay(),citeDTO.getStartTime());
 		
 		User userLoggued = loginApp();
@@ -138,50 +145,7 @@ public class CiteService {
 		
 		return citeDTO;
 	}
-	
-	/**
-	 * Método para establecer el trabajador manualmente
-	 * Buscamos el trabajador y comprobamos su disponibilidad 
-	 * @param idCite
-	 * @param idWorker
-	 * @return
-	 */
-	public GetUserDTO setWorker(String idCite, String idWorker) {
-		
-		Integer id = convertStringToInteger(idCite);
-		
-		Cites cite = citeRepository.findById(id).orElseThrow(() -> 
-		new ElementNotFoundException("Cite not found with id: " + id)); 
-		
-		User worker = new User(); 
-		
-		if(idWorker == null || idWorker.isEmpty()) {
-			worker = setAutomaticallyWorkerToCite(cite.getDay(), cite.getStartTime());
-		}else {
-			Integer idWorkerInteger = convertStringToInteger(idWorker);
-			
-			worker = userRepository.findById(idWorkerInteger)
-					.orElseThrow(() -> new ElementNotFoundException("Worker not found with this id"));
-		}
-		
-		if(worker.getRole().equals("user")) {
-			throw new ValueNotValidException("Worker not found");
-		}
-		
-		EmployeeSchedule schedule = findEmployeeSchedule(cite.getDay(),worker,cite.getStartTime());
-		
-		checkTime(cite.getStartTime(),schedule);
-        
-		cite.setWorker(worker);
-        checkCiteAvailability(cite,worker);
-        
-		citeRepository.save(cite);
-		
-		GetUserDTO workerDTO = new GetUserDTO(worker.getId(),worker.getName(),worker.getEmail(),worker.getPhone(),
-				worker.getRole(),ConvertToDTO.getEmployeeScheduleDTO(worker.getEmployeeSchedules()),worker.getCalendarNotifications(),worker.getEmailNotifications());
-		
-		return workerDTO;
-	}
+
 	
 	/**
 	 * Método para que el sistema establezca un usuario automáticamente
@@ -246,7 +210,7 @@ public class CiteService {
 	 * @param newCiteDTO
 	 * @return
 	 */
-	public BookCiteDTO updateCite(String idCite,BookCiteDTO newCiteDTO,
+	public UpdateCiteDTO updateCite(String idCite,UpdateCiteDTO newCiteDTO,
 			String idWorker) {
 		
 		Integer id = convertStringToInteger(idCite);
@@ -738,4 +702,23 @@ public class CiteService {
         return new Time(startTime.getTime() + durationInMillis);
     }
 	
+    public static String generateGoogleCalendarId(int length) { 
+    	// Conjunto de caracteres válidos en base32hex (a-v y 0-9) 
+    	String validChars = "abcdefghijklmnopqrstuv0123456789";
+    	
+    	if (length < 5) { 
+    		throw new ValueNotValidException("ID length must be at least 5 characters"); 
+    	}
+    	
+    	StringBuilder result = new StringBuilder(); 
+    	Random random = new Random(); 
+    	
+    	for (int i = 0; i < length; i++) { 
+    		int index = random.nextInt(validChars.length()); 
+    		result.append(validChars.charAt(index)); 
+    		
+    	}
+    	
+    	return result.toString(); 
+    }
 }
