@@ -81,7 +81,7 @@ public class CiteService {
 	}
 	
 	/**
-	 * Modificar
+	 * Obtener mis citas
 	 * @param idString
 	 * @return
 	 */
