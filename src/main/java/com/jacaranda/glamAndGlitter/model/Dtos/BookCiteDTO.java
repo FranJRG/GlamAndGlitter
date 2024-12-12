@@ -7,15 +7,20 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class BookCiteDTO {
 	
+	@Schema(description = "La fecha de la cita deberá cumplir el formato yyyy-MM-dd")
 	@JsonFormat(shape= Shape.STRING, pattern ="yyyy-MM-dd")
 	private Date day;
 	
+	@Schema(description = "La hora de inicio deberá mantener el formato HH:mm:ss")
 	private Time startTime;
 	
 	private Integer idService;
 	
+	@Schema(description = "El eventId irá vacío o se quedará como está, la aplicación se encargará de crearlo")
 	private String eventId;
 
 	public BookCiteDTO() {

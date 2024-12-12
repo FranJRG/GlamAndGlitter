@@ -50,15 +50,15 @@ public class CiteController {
 		return ResponseEntity.ok().body(cites);
 	}
 	
-	@Operation(summary = "Método para obtener los trabajadores disponibles, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener los trabajadores disponibles filtrando por fecha y hora se usará para modificar los trabajadores disponibles cuando los administradores cambien fecha u hora de una cita puedan ver que trabajadores hay disponibles a esa hora, solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@GetMapping("/workers/{id}")
-	public ResponseEntity<?>workers(@PathVariable String id, 
-			@RequestParam Optional<String> dateFilter, 
-			@RequestParam Optional<String> timeFilter){
+	public ResponseEntity<?>workers(@Parameter(description = "ID del trabajador") @PathVariable String id, 
+			@Parameter(description="Fecha para filtrar (yyyy-MM-dd)")@RequestParam Optional<String> dateFilter, 
+			@Parameter(description="Hora para filtrar (HH:mm:ss)")@RequestParam Optional<String> timeFilter){
 		List<GetUserDTO>users =  citeService.getWorkersAvailablesById(id,dateFilter.orElse(null),timeFilter.orElse(null));
 		return ResponseEntity.ok().body(users);
 	}
@@ -107,7 +107,7 @@ public class CiteController {
 		return ResponseEntity.ok().body(cites);
 	}
 	
-	@Operation(summary = "Método para reservar una cita, solo los usuarios logueados podrán acceder aquí")
+	@Operation(summary = "(El eventId irá nulo | vacío o se quedará tal como está)Método para reservar una cita, solo los usuarios logueados podrán acceder aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
