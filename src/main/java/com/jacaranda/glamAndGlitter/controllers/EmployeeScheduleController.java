@@ -16,6 +16,7 @@ import com.jacaranda.glamAndGlitter.model.Dtos.EmployeeScheduleDTO;
 import com.jacaranda.glamAndGlitter.services.EmployeeScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -31,7 +32,7 @@ public class EmployeeScheduleController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@GetMapping("/userSchedule/{id}")
-	public ResponseEntity<?>getUserSchedule(@PathVariable String id){
+	public ResponseEntity<?>getUserSchedule(@Parameter(description = "ID del trabajador") @PathVariable String id){
 		List<EmployeeScheduleDTO> schedules = employeeScheduleService.getUserSchedule(id);
 		return ResponseEntity.ok().body(schedules);
 	}
@@ -42,20 +43,20 @@ public class EmployeeScheduleController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PostMapping("/setSchedule/{id}")
-	public ResponseEntity<?>setSchedule(@PathVariable String id, @RequestParam String day, @RequestParam String turn){
+	public ResponseEntity<?>setSchedule(@Parameter(description = "ID del trabajador") @PathVariable String id,@Parameter(description = "Dia de la semana (Monday,Tuestay,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon)") @RequestParam String turn){
 		List<EmployeeScheduleDTO> schedules = employeeScheduleService.addSchedule(id,day,turn);
 		return ResponseEntity.ok().body(schedules);
 	}
 	
-	@Operation(summary = "Actualizar el horario a un trabajador, solo administradores podrán ejercer esta función")
+	@Operation(summary = "Actualizar el horario a un trabajador o crearle uno en caso de no tener, solo administradores podrán ejercer esta función")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PutMapping("/updateSchedule/{id}")
-	public ResponseEntity<?>updateSchedule(@PathVariable String id,@RequestParam String day, @RequestParam String turn,
-			@RequestParam Optional<Integer> userId){
-		EmployeeScheduleDTO scheduleDTO = employeeScheduleService.updateSchedule(id,day,turn,userId.orElse(0));
+	public ResponseEntity<?>updateSchedule(@Parameter(description = "ID del horario") @PathVariable String id,@Parameter(description = "Dia de la semana de trabajo (Monday,Tuestay,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon, Clear (para eliminar el turno), Duplicate(Para añadir un turno extra a ese día, es decir si tiene turno de mañana se añadirá también de tarde)") @RequestParam String turn,
+			@Parameter(description = "ID del trabajador") @RequestParam Optional<String> userId){
+		EmployeeScheduleDTO scheduleDTO = employeeScheduleService.updateSchedule(id,day,turn,userId.orElse(""));
 		return ResponseEntity.ok().body(scheduleDTO);
 	}
 

@@ -43,7 +43,7 @@ public class UserController {
 		return ResponseEntity.ok().body(user);
 	}
 	
-	@Operation(summary = "Endpoint para obtener un usuario por su id, cualquier usuario podrá acceder")
+	@Operation(summary = "Endpoint para obtener un usuario por su id, deberás estar autenticado para acceder aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")

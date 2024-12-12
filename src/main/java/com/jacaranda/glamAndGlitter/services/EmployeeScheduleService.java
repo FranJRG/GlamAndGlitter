@@ -1,6 +1,7 @@
 package com.jacaranda.glamAndGlitter.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,21 +62,35 @@ public class EmployeeScheduleService {
 	 * @param turn
 	 * @return
 	 */
-	public List<EmployeeScheduleDTO> addSchedule(String idString, String day,String turn) {
+	public List<EmployeeScheduleDTO> addSchedule(String idString, String dayNormal,String turnNormal) {
+		
+		List<String> daysOfWeek = Arrays.asList("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
+		List<String> availablesTurns = Arrays.asList("MORNING","AFTERNOON","CLEAR","DUPLICATE");
 		
 		Integer id = citeService.convertStringToInteger(idString);
 		
 		
-		if(day == null || day.isEmpty()) {
+		if(dayNormal == null || dayNormal.isEmpty()) {
 			throw new ValueNotValidException("Day can't be null");
 		}
 		
-		if(turn == null || turn.isEmpty()) {
+		if(turnNormal == null || turnNormal.isEmpty()) {
 			throw new ValueNotValidException("Turn can't be null");
 		}
 		
-		List<EmployeeScheduleDTO>schedulesTemp = new ArrayList<EmployeeScheduleDTO>();
+		if(!daysOfWeek.contains(dayNormal.toUpperCase())) {
+			throw new ValueNotValidException("This day is not valid!");
+		}
+
+		if(!availablesTurns.contains(turnNormal.toUpperCase())) {
+			throw new ValueNotValidException("This turn is not valid!");
+		}
 		
+		//Normalizamos las variables introducidas por el usuario para que se guarden adaptadas a la base de datos
+		String day = capitalizeFirstLetter(dayNormal);
+		String turn = capitalizeFirstLetter(turnNormal);
+		
+		List<EmployeeScheduleDTO>schedulesTemp = new ArrayList<EmployeeScheduleDTO>();
 		
 		User worker = userRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Worker not found with this id"));
 		
@@ -91,7 +106,10 @@ public class EmployeeScheduleService {
 		return schedulesTemp;
 	}
 	
-	public EmployeeScheduleDTO updateSchedule(String idString, String day, String turn, Integer userId){
+	public EmployeeScheduleDTO updateSchedule(String idString, String dayNormal, String turnNormal, String userIdString){
+		
+		List<String> daysOfWeek = Arrays.asList("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
+		List<String> availablesTurns = Arrays.asList("MORNING","AFTERNOON","CLEAR","DUPLICATE");
 		
 		Integer id;
 		try {
@@ -100,15 +118,49 @@ public class EmployeeScheduleService {
 			throw new ValueNotValidException("Id must be numeric");
 		}
 		
+		Integer userId;
+		try {
+			userId = Integer.parseInt(userIdString);
+		}catch(NumberFormatException e) {
+			throw new ValueNotValidException("User id must be numeric");
+		}
+		
+		if(turnNormal == null || turnNormal.isEmpty()) {
+			throw new ValueNotValidException("Turn can't be empty");
+		}
+		
+		if(!daysOfWeek.contains(dayNormal.toUpperCase())) {
+			throw new ValueNotValidException("This day is not valid!");
+		}
+		
+		if(!availablesTurns.contains(turnNormal.toUpperCase())) {
+			throw new ValueNotValidException("This turn is not valid!");
+		}
+		
 		EmployeeScheduleDTO schedule;
+		User worker = userRepository.findById(userId).orElseThrow(() -> new ElementNotFoundException("Worker not found with this id!"));
+		
+		if(!worker.getRole().equals("stylist")){
+			throw new ValueNotValidException("This user is not a worker");
+		}
 		
 		EmployeeSchedule employeeSchedule = employeeScheduleRepository.findById(id).orElse(null);
+		
+		//Normalizamos el turno introducido por el usuario para que no haya errores en base de datos
+		String turn = capitalizeFirstLetter(turnNormal);
+		String day = capitalizeFirstLetter(dayNormal);
 		
 		if(employeeSchedule != null) {
 			
 			if(!turn.equals("Clear")) {
 				
 				if(turn.equals("Duplicate")) {
+					
+					List<EmployeeSchedule>schedulesByDays = employeeScheduleRepository.findByWorkerAndDay(worker, day);
+					
+					if(schedulesByDays.size() == 2) {
+						throw new ValueNotValidException("This worker already have duplicate turn for this day");
+					}
 					
 					if(employeeSchedule.getTurn().equals("Morning")) {
 						addSchedule(employeeSchedule.getWorker().getId().toString(),employeeSchedule.getDay(),"Afternoon");					
@@ -139,5 +191,13 @@ public class EmployeeScheduleService {
 		return schedule;
 		
 	}
+	
+	public String capitalizeFirstLetter(String input) {
+	    if (input == null || input.isEmpty()) {
+	        return input;
+	    }
+	    return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+	}
+
 	
 }

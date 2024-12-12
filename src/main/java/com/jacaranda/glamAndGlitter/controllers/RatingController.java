@@ -51,7 +51,7 @@ public class RatingController {
 		return ResponseEntity.ok().body(rating);
 	}
 	
-	@Operation(summary = "Método para obtener la media de puntuacion del último mes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener las peores puntuaciones del último mes (menores que 3), solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
@@ -62,7 +62,7 @@ public class RatingController {
 		return ResponseEntity.ok().body(ratings);
 	}
 	
-	@Operation(summary = "Método para obtener la media de puntuacion del último mes, solo los administradores accederán aquí")
+	@Operation(summary = "Método para obtener las mejores puntuaciones, solo los administradores accederán aquí")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", description = "Bad request"),
 			@ApiResponse(responseCode = "200", description = "Complete!")
