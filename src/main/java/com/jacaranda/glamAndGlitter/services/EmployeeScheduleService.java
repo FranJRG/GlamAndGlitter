@@ -195,7 +195,7 @@ public class EmployeeScheduleService {
 				throw new ValueNotValidException("This worker already have a schedule for this day, is the id: " + aux.get(0).getId());
 			}
 			
-			if(!turn.equals("Afternoon") || !turn.equals("Morning")) {
+			if(!turn.equals("Afternoon") && !turn.equals("Morning")) {
 				throw new ValueNotValidException("This schedule does not exist yet and we can't duplicate or clear it!");
 			}
 			
