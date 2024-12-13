@@ -99,7 +99,7 @@ public class EmployeeScheduleService {
 		}
 		
 		EmployeeSchedule employeeSchedule = new EmployeeSchedule(worker,turn,day);
-		EmployeeScheduleDTO employeeScheduleDto = new EmployeeScheduleDTO(employeeSchedule.getId(),employeeSchedule.getDay(),turn);
+		EmployeeScheduleDTO employeeScheduleDto = new EmployeeScheduleDTO(employeeSchedule.getId(),turn,employeeSchedule.getDay());
 		schedulesTemp.add(employeeScheduleDto);
 		employeeScheduleRepository.save(employeeSchedule);
 		
@@ -152,6 +152,10 @@ public class EmployeeScheduleService {
 		
 		if(employeeSchedule != null) {
 			
+			if(!worker.getEmployeeSchedules().contains(employeeSchedule)) {
+				throw new ValueNotValidException("This schedule is not of this worker");
+			}
+			
 			if(!turn.equals("Clear")) {
 				
 				if(turn.equals("Duplicate")) {
@@ -163,9 +167,9 @@ public class EmployeeScheduleService {
 					}
 					
 					if(employeeSchedule.getTurn().equals("Morning")) {
-						addSchedule(employeeSchedule.getWorker().getId().toString(),employeeSchedule.getDay(),"Afternoon");					
+						addSchedule(employeeSchedule.getWorker().getId().toString(),"Afternoon",employeeSchedule.getDay());					
 					}else if(employeeSchedule.getTurn().equals("Afternoon")) {
-						addSchedule(employeeSchedule.getWorker().getId().toString(),employeeSchedule.getDay(),"Morning");										
+						addSchedule(employeeSchedule.getWorker().getId().toString(),"Morning",employeeSchedule.getDay());										
 					}
 					
 				}else {
@@ -177,14 +181,25 @@ public class EmployeeScheduleService {
 					employeeScheduleRepository.save(employeeSchedule);
 				}			
 				
-				schedule = new EmployeeScheduleDTO(employeeSchedule.getId(),employeeSchedule.getDay(),employeeSchedule.getTurn());
+				schedule = new EmployeeScheduleDTO(employeeSchedule.getId(),employeeSchedule.getTurn(),employeeSchedule.getDay());
 				
 			}else {
 				employeeScheduleRepository.delete(employeeSchedule);			
 			}				
-			schedule = new EmployeeScheduleDTO(employeeSchedule.getId(),employeeSchedule.getDay(),employeeSchedule.getTurn());
+			schedule = new EmployeeScheduleDTO(employeeSchedule.getId(),employeeSchedule.getTurn(),employeeSchedule.getDay());
 		}else {
-			schedule = (EmployeeScheduleDTO) addSchedule(userId.toString(),day,turn);
+			
+			List<EmployeeSchedule>aux = employeeScheduleRepository.findByWorkerAndDay(worker, day);
+			
+			if(aux.size() > 0) {
+				throw new ValueNotValidException("This worker already have a schedule for this day, is the id: " + aux.get(0).getId());
+			}
+			
+			if(!turn.equals("Afternoon") || !turn.equals("Morning")) {
+				throw new ValueNotValidException("This schedule does not exist yet and we can't duplicate or clear it!");
+			}
+			
+			schedule = addSchedule(userId.toString(),turn,day).get(0);
 		}
 		
 		
