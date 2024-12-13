@@ -62,7 +62,7 @@ public class EmployeeScheduleService {
 	 * @param turn
 	 * @return
 	 */
-	public List<EmployeeScheduleDTO> addSchedule(String idString, String dayNormal,String turnNormal) {
+	public List<EmployeeScheduleDTO> addSchedule(String idString, String turnNormal,String dayNormal) {
 		
 		List<String> daysOfWeek = Arrays.asList("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
 		List<String> availablesTurns = Arrays.asList("MORNING","AFTERNOON","CLEAR","DUPLICATE");
@@ -96,6 +96,16 @@ public class EmployeeScheduleService {
 		
 		if(!worker.getRole().equals("stylist")) {
 			throw new ValueNotValidException("Only workers can have schedules");
+		}
+		
+		List<EmployeeSchedule>aux = employeeScheduleRepository.findByWorkerAndDay(worker, day);
+		
+		if(aux.size() > 0) {
+			throw new ValueNotValidException("This worker already have a schedule for this day, is the id: " + aux.get(0).getId());
+		}
+		
+		if(aux.size() == 0 && (turn.equals("Clear") || turn.equals("Duplicate"))) {
+			throw new ValueNotValidException("This turn is not valid for create a schedule");
 		}
 		
 		EmployeeSchedule employeeSchedule = new EmployeeSchedule(worker,turn,day);
