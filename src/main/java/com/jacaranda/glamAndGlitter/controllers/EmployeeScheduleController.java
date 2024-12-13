@@ -43,7 +43,7 @@ public class EmployeeScheduleController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PostMapping("/setSchedule/{id}")
-	public ResponseEntity<?>setSchedule(@Parameter(description = "ID del trabajador") @PathVariable String id,@Parameter(description = "Dia de la semana (Monday,Tuestay,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon)") @RequestParam String turn){
+	public ResponseEntity<?>setSchedule(@Parameter(description = "ID del trabajador") @PathVariable String id,@Parameter(description = "Dia de la semana (Monday,Tuesday,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon)") @RequestParam String turn){
 		List<EmployeeScheduleDTO> schedules = employeeScheduleService.addSchedule(id,day,turn);
 		return ResponseEntity.ok().body(schedules);
 	}
@@ -54,7 +54,7 @@ public class EmployeeScheduleController {
 			@ApiResponse(responseCode = "200", description = "Complete!")
 	})
 	@PutMapping("/updateSchedule/{id}")
-	public ResponseEntity<?>updateSchedule(@Parameter(description = "ID del horario") @PathVariable String id,@Parameter(description = "Dia de la semana de trabajo (Monday,Tuestay,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon, Clear (para eliminar el turno), Duplicate(Para añadir un turno extra a ese día, es decir si tiene turno de mañana se añadirá también de tarde)") @RequestParam String turn,
+	public ResponseEntity<?>updateSchedule(@Parameter(description = "ID del horario (Si no existe se creará uno con el id autoincrementado)") @PathVariable String id,@Parameter(description = "Dia de la semana de trabajo (Monday,Tuestay,etc...)") @RequestParam String day,@Parameter(description = "Turno (Morning | Afternoon, Clear (para eliminar el turno), Duplicate(Para añadir un turno extra a ese día, es decir si tiene turno de mañana se añadirá también de tarde)") @RequestParam String turn,
 			@Parameter(description = "ID del trabajador") @RequestParam Optional<String> userId){
 		EmployeeScheduleDTO scheduleDTO = employeeScheduleService.updateSchedule(id,day,turn,userId.orElse(""));
 		return ResponseEntity.ok().body(scheduleDTO);
